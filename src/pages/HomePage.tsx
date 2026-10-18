@@ -167,7 +167,7 @@ export default function HomePage() {
             <div className="hero-visual-wrapper">
               <div className="hero-image-natural">
                 <img 
-                  src="/assets/images/hero.png" 
+                  src="./assets/images/hero.png" 
                   alt="Family Consultation Qalbi Itmaan" 
                 />
               </div>

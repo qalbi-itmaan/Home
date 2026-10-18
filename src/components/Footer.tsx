@@ -12,7 +12,7 @@ export default function Footer() {
           <div className="footer-brand">
             <div className="footer-logo" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
               <img 
-                src="/assets/logo/logo-mark.png" 
+                src="./assets/logo/logo-mark.png" 
                 alt="Qalbi Itmaan" 
                 style={{ height: '42px', width: 'auto', objectFit: 'contain' }} 
               />

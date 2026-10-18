@@ -192,7 +192,7 @@ export default function Header({ scrolled }: HeaderProps) {
         <div className="header-inner">
           <Link to="/" className="header-logo" style={{ display: 'flex', alignItems: 'center' }}>
             <img 
-              src="/assets/logo/logo-header.png" 
+              src="./assets/logo/logo-header.png" 
               alt="Qalbi Itmaan - قلبي اطمأن" 
               className="header-logo-img"
             />

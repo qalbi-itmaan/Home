@@ -53,38 +53,20 @@ const app = initializeApp(getConfig());
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
-// Authenticate seamlessly: try anonymous auth first; if disabled in console, fallback to public website account
+// Seamless optional authentication helper:
+// Public Firestore rules permit reading services/formations and creating reservations/inscriptions without auth.
+// If anonymous authentication is enabled in Firebase Console, it is used transparently; otherwise it gracefully no-ops.
 export async function ensureAuthenticated() {
   if (auth.currentUser) return auth.currentUser;
 
   try {
     const cred = await signInAnonymously(auth);
     return cred.user;
-  } catch (anonErr: any) {
-    console.warn('Anonymous auth note:', anonErr?.message || anonErr);
-    try {
-      const publicEmail = import.meta.env.VITE_PUBLIC_AUTH_EMAIL || 'public-website@qalbi-itmaan.dz';
-      const publicPass = import.meta.env.VITE_PUBLIC_AUTH_PASSWORD || 'PublicWebsite2026!';
-      try {
-        const cred = await signInWithEmailAndPassword(auth, publicEmail, publicPass);
-        return cred.user;
-      } catch (loginErr: any) {
-        const code = loginErr?.code;
-        if (code === 'auth/user-not-found' || code === 'auth/invalid-credential' || code === 'auth/invalid-email') {
-          const cred = await createUserWithEmailAndPassword(auth, publicEmail, publicPass);
-          return cred.user;
-        }
-        return null;
-      }
-    } catch (fallbackErr) {
-      console.warn('Public auth fallback error:', fallbackErr);
-      return null;
-    }
+  } catch {
+    // Anonymous auth not enabled or restricted; public Firestore operations proceed without auth
+    return null;
   }
 }
-
-// Initial trigger
-ensureAuthenticated();
 
 // ============================================================
 // READ: Get published formations
