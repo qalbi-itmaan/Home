@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../lib/i18n';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db, getFormationById } from '../lib/firebase';
 
 interface StudentSpaceModalProps {
   isOpen: boolean;
@@ -79,21 +79,21 @@ export function StudentSpaceModal({ isOpen, onClose }: StudentSpaceModalProps) {
     try {
       let inscriptionData: any = null;
 
-      // 1. Try Firebase query first
+      // 1. Direct point-lookup by ID first (1 single Firestore read, fast & cheap)
       try {
-        const q = query(
-          collection(db, 'inscriptions'),
-          where('trackingNumber', '==', cleanTracking)
-        );
-        const snapshot = await getDocs(q);
-        if (!snapshot.empty) {
-          inscriptionData = snapshot.docs[0].data();
+        const docRef = doc(db, 'inscriptions', cleanTracking);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          inscriptionData = docSnap.data();
         } else {
-          // Direct doc lookup by ID
-          const docRef = doc(db, 'inscriptions', cleanTracking);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            inscriptionData = docSnap.data();
+          // Fallback query if stored under auto-ID
+          const q = query(
+            collection(db, 'inscriptions'),
+            where('trackingNumber', '==', cleanTracking)
+          );
+          const snapshot = await getDocs(q);
+          if (!snapshot.empty) {
+            inscriptionData = snapshot.docs[0].data();
           }
         }
       } catch (err) {
@@ -121,19 +121,16 @@ export function StudentSpaceModal({ isOpen, onClose }: StudentSpaceModalProps) {
       }
 
       // Fetch formation details to retrieve YouTube link & Google Drive link
+      // Uses the 1-hour memory & localStorage cache (0 Firestore reads)
       let driveLink = inscriptionData.driveLink || '';
       let youtubeLink = inscriptionData.youtubeLink || '';
 
       if (inscriptionData.formationId) {
         try {
-          let formDoc = await getDoc(doc(db, 'services', inscriptionData.formationId));
-          if (!formDoc.exists()) {
-            formDoc = await getDoc(doc(db, 'formations', inscriptionData.formationId));
-          }
-          if (formDoc.exists()) {
-            const formData = formDoc.data();
-            if (!driveLink) driveLink = formData.driveLink || '';
-            if (!youtubeLink) youtubeLink = formData.youtubeLink || '';
+          const form = await getFormationById(inscriptionData.formationId);
+          if (form) {
+            if (!driveLink) driveLink = (form as any).driveLink || '';
+            if (!youtubeLink) youtubeLink = (form as any).youtubeLink || '';
           }
         } catch { /* ignore */ }
       }

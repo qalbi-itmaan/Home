@@ -238,9 +238,9 @@ const DEFAULT_FORMATIONS: Formation[] = [
   }
 ];
 
-// 15-minute cache for published formations to save Firestore reads on public visitors
+// 1-hour cache in localStorage to maximize cost-savings on Firebase reads
 let formationsMemoryCache: { data: Formation[]; timestamp: number } | null = null;
-const FORMATIONS_CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
+const FORMATIONS_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 export async function getPublishedFormations(forceRefresh = false): Promise<Formation[]> {
   const now = Date.now();
@@ -248,10 +248,10 @@ export async function getPublishedFormations(forceRefresh = false): Promise<Form
     return formationsMemoryCache.data;
   }
 
-  // Check sessionStorage
-  if (!forceRefresh && typeof sessionStorage !== 'undefined') {
+  // Check persistent localStorage first to save reads across visits
+  if (!forceRefresh && typeof localStorage !== 'undefined') {
     try {
-      const stored = sessionStorage.getItem('qalbi_formations_cache');
+      const stored = localStorage.getItem('qalbi_formations_cache');
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed.timestamp && (now - parsed.timestamp < FORMATIONS_CACHE_TTL_MS) && Array.isArray(parsed.data) && parsed.data.length > 0) {
@@ -278,8 +278,8 @@ export async function getPublishedFormations(forceRefresh = false): Promise<Form
       if (results.length > 0) {
         formationsMemoryCache = { data: results, timestamp: now };
         try {
-          if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.setItem('qalbi_formations_cache', JSON.stringify(formationsMemoryCache));
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('qalbi_formations_cache', JSON.stringify(formationsMemoryCache));
           }
         } catch { /* ignore */ }
         return results;
@@ -292,12 +292,31 @@ export async function getPublishedFormations(forceRefresh = false): Promise<Form
 }
 
 export async function getFormationById(id: string): Promise<Formation | null> {
-  // Check cached formations first (0 Firestore read)
+  // 1. Check memory cache first (0 Firestore read)
   if (formationsMemoryCache?.data) {
     const found = formationsMemoryCache.data.find(f => f.id === id);
     if (found) return found;
   }
 
+  // 2. Check localStorage cached list (0 Firestore read)
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('qalbi_formations_cache');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed.data)) {
+          const found = parsed.data.find((f: Formation) => f.id === id);
+          if (found) return found;
+        }
+      }
+    } catch { /* ignore */ }
+  }
+
+  // 3. Check bundled default formations (0 Firestore read)
+  const defaultFound = DEFAULT_FORMATIONS.find(f => f.id === id);
+  if (defaultFound) return defaultFound;
+
+  // 4. Single document fetch only if not in any cache
   try {
     const config = getConfig();
     if (config.apiKey && config.projectId) {
@@ -310,7 +329,7 @@ export async function getFormationById(id: string): Promise<Formation | null> {
   } catch (error) {
     console.warn('Error fetching formation from Firebase:', error);
   }
-  return DEFAULT_FORMATIONS.find(f => f.id === id) || null;
+  return null;
 }
 
 // ============================================================

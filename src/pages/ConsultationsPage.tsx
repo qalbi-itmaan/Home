@@ -35,6 +35,7 @@ export default function ConsultationsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
 
     if (!patientName.trim() || !patientPhone.trim()) {
       showToast(t('form.error.required'), 'error');

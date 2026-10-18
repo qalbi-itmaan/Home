@@ -28,6 +28,7 @@ export default function InscriptionModal({ formation, onClose }: InscriptionModa
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
 
     if (!customerName.trim() || !customerPhone.trim()) {
       showToast(t('form.error.required'), 'error');
