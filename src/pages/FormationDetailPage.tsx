@@ -419,7 +419,7 @@ export default function FormationDetailPage() {
                 </button>
 
                 <a
-                  href={`https://wa.me/213550000000?text=${encodeURIComponent(
+                  href={`https://wa.me/213698746428?text=${encodeURIComponent(
                     lang === 'ar'
                       ? `السلام عليكم، أود الاستفسار بخصوص دورة: ${title}`
                       : lang === 'en'

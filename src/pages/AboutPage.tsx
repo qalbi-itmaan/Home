@@ -80,12 +80,18 @@ export default function AboutPage() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--bleu-royal)', fontWeight: 700, background: 'var(--bleu-clair)', padding: '12px 20px', borderRadius: '16px' }}>
+                <a 
+                  href="https://maps.app.goo.gl/x7WfmaLJfHs4Jb3s9" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', color: 'var(--bleu-royal)', fontWeight: 700, background: 'var(--bleu-clair)', padding: '12px 20px', borderRadius: '16px', textDecoration: 'none' }}
+                  title="Ouvrir sur Google Maps"
+                >
                   <MapPin size={18} />
                   <span>
-                    {t('about.hq_location')}
+                    {t('about.hq_location')} ↗
                   </span>
-                </div>
+                </a>
               </div>
             </div>
           </div>

@@ -20,10 +20,46 @@ export default function ContactPage() {
   };
 
   const contactInfo = [
-    { icon: MapPin, label: t('contact.address'), value: t('contact.address.value'), link: undefined },
-    { icon: Phone, label: t('contact.phone'), value: '0550 00 00 00', link: 'tel:0550000000' },
-    { icon: Mail, label: t('contact.email'), value: 'contact@qalbi-itmaan.com', link: 'mailto:contact@qalbi-itmaan.com' },
-    { icon: Clock, label: t('contact.hours'), value: t('contact.hours.value'), link: undefined },
+    { 
+      icon: MapPin, 
+      label: t('contact.address'), 
+      value: t('contact.address.value'), 
+      link: 'https://maps.app.goo.gl/x7WfmaLJfHs4Jb3s9',
+      actionText: t('contact.maps_btn'),
+      external: true 
+    },
+    { 
+      icon: Phone, 
+      label: t('contact.phone_consultations_title'), 
+      value: '0558 02 46 10', 
+      link: 'tel:0558024610',
+      whatsapp: 'https://wa.me/213558024610'
+    },
+    { 
+      icon: Phone, 
+      label: t('contact.phone_formations_title'), 
+      value: '0698 74 64 28', 
+      link: 'tel:0698746428',
+      whatsapp: 'https://wa.me/213698746428'
+    },
+    { 
+      icon: Phone, 
+      label: t('contact.phone_fixe_title'), 
+      value: '028 90 81 39', 
+      link: 'tel:028908139' 
+    },
+    { 
+      icon: Mail, 
+      label: t('contact.email'), 
+      value: 'contact@qalbi-itmaan.dz', 
+      link: 'mailto:contact@qalbi-itmaan.dz' 
+    },
+    { 
+      icon: Clock, 
+      label: t('contact.hours'), 
+      value: t('contact.hours.value'), 
+      link: undefined 
+    },
   ];
 
   return (
@@ -43,25 +79,74 @@ export default function ContactPage() {
               {contactInfo.map((info, i) => {
                 const Icon = info.icon;
                 return (
-                  <div className="contact-info-card" key={i}>
+                  <div className="contact-info-card" key={i} style={{ marginBottom: '14px' }}>
                     <div className="contact-info-icon">
                       <Icon size={22} />
                     </div>
-                    <div>
-                      <div style={{ fontWeight: 600, marginBottom: '4px' }}>{info.label}</div>
-                      {info.link ? (
-                        <a href={info.link} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>
-                          {info.value}
-                        </a>
-                      ) : (
-                        <div style={{ color: 'var(--text-secondary)' }}>{info.value}</div>
-                      )}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 700, marginBottom: '4px', fontSize: '0.95rem' }}>{info.label}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                        {info.link ? (
+                          <a 
+                            href={info.link} 
+                            target={info.external ? '_blank' : undefined}
+                            rel={info.external ? 'noopener noreferrer' : undefined}
+                            dir="ltr"
+                            style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 600 }}
+                          >
+                            {info.value}
+                          </a>
+                        ) : (
+                          <div style={{ color: 'var(--text-secondary)' }}>{info.value}</div>
+                        )}
+
+                        {info.actionText && (
+                          <a
+                            href={info.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              fontSize: '0.78rem',
+                              fontWeight: 700,
+                              color: 'var(--bleu)',
+                              textDecoration: 'none',
+                              padding: '2px 8px',
+                              borderRadius: '6px',
+                              background: 'var(--bleu-clair)'
+                            }}
+                          >
+                            {info.actionText}
+                          </a>
+                        )}
+
+                        {info.whatsapp && (
+                          <a
+                            href={info.whatsapp}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              fontSize: '0.78rem',
+                              fontWeight: 700,
+                              color: '#128C7E',
+                              textDecoration: 'none',
+                              padding: '2px 8px',
+                              borderRadius: '6px',
+                              background: 'rgba(37, 211, 102, 0.15)',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <MessageSquare size={12} /> WhatsApp
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
               })}
 
-              {/* WhatsApp Fast Contact Card */}
+              {/* WhatsApp Fast Contact Card with dual choice */}
               <div 
                 className="card" 
                 style={{ 
@@ -69,29 +154,80 @@ export default function ContactPage() {
                   color: 'white', 
                   padding: '24px', 
                   borderRadius: '24px', 
-                  marginTop: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '16px',
-                  flexWrap: 'wrap'
+                  marginTop: '20px'
                 }}
               >
-                <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <MessageSquare size={26} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <MessageSquare size={24} />
+                  </div>
+                  <div>
+                    <h4 style={{ color: 'white', fontSize: '1.05rem', margin: '0 0 2px 0' }}>{t('contact.whatsapp.title')}</h4>
+                    <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.82rem', margin: 0 }}>{t('contact.whatsapp.desc')}</p>
+                  </div>
                 </div>
-                <div style={{ flexGrow: 1, minWidth: '160px' }}>
-                  <h4 style={{ color: 'white', fontSize: '1.05rem', marginBottom: '2px' }}>{t('contact.whatsapp.title')}</h4>
-                  <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.85rem', margin: 0 }}>{t('contact.whatsapp.desc')}</p>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
+                  <a 
+                    href="https://wa.me/213558024610" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="btn" 
+                    style={{ background: 'white', color: '#128C7E', fontWeight: 800, padding: '10px 14px', fontSize: '0.85rem', justifyContent: 'center' }}
+                  >
+                    🌿 {t('contact.whatsapp.consultations')}
+                  </a>
+                  <a 
+                    href="https://wa.me/213698746428" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="btn" 
+                    style={{ background: 'white', color: '#128C7E', fontWeight: 800, padding: '10px 14px', fontSize: '0.85rem', justifyContent: 'center' }}
+                  >
+                    📚 {t('contact.whatsapp.formations')}
+                  </a>
                 </div>
-                <a 
-                  href="https://wa.me/213550000000" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="btn" 
-                  style={{ background: 'white', color: '#128C7E', fontWeight: 800, padding: '10px 18px', fontSize: '0.85rem', flexShrink: 0 }}
-                >
-                  {t('contact.whatsapp.btn')}
-                </a>
+              </div>
+
+              {/* Social Media Card */}
+              <div 
+                className="card" 
+                style={{ 
+                  marginTop: '16px', 
+                  padding: '20px 24px', 
+                  borderRadius: '20px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '12px'
+                }}
+              >
+                <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
+                  {t('contact.social_title')}
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <a 
+                    href="https://www.facebook.com/profile.php/?id=100064151347005" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="btn btn-secondary btn-sm"
+                    style={{ gap: '6px', color: '#1877F2', borderColor: 'rgba(24, 119, 242, 0.3)' }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                    Facebook
+                  </a>
+                  <a 
+                    href="https://www.instagram.com/qalbi_itmaan20/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="btn btn-secondary btn-sm"
+                    style={{ gap: '6px', color: '#E1306C', borderColor: 'rgba(225, 48, 108, 0.3)' }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
+                    Instagram
+                  </a>
+                </div>
               </div>
             </div>
 

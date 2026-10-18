@@ -350,7 +350,7 @@ export function StudentSpaceModal({ isOpen, onClose }: StudentSpaceModalProps) {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <a
-                href={`https://wa.me/213550000000?text=${encodeURIComponent(
+                href={`https://wa.me/213698746428?text=${encodeURIComponent(
                   lang === 'ar'
                     ? `السلام عليكم قلبي اطمأن، هذا وصل دفع رسوم دورة "${unlockedCourse.formationTitle}" (رقم التتبع: ${unlockedCourse.trackingNumber}، الاسم: ${unlockedCourse.studentName}). يرجى تأكيد الدخول وتفعيل الدروس.`
                     : lang === 'en'

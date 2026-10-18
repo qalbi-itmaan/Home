@@ -9,7 +9,7 @@ import FormationDetailPage from './pages/FormationDetailPage';
 import ConsultationsPage from './pages/ConsultationsPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
-import { ArrowUp, MessageCircle } from 'lucide-react';
+import { ArrowUp, MessageCircle, X, Phone } from 'lucide-react';
 
 function ScrollToTopOnNavigate() {
   const { pathname } = useLocation();
@@ -21,6 +21,7 @@ export default function App() {
   const { dir, lang } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showWhatsAppMenu, setShowWhatsAppMenu] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -81,15 +82,129 @@ export default function App() {
           left: dir === 'rtl' ? '28px' : 'auto',
           display: 'flex',
           flexDirection: 'column',
+          alignItems: dir === 'rtl' ? 'flex-start' : 'flex-end',
           gap: '14px',
           zIndex: 999
         }}
       >
-        {/* Floating WhatsApp Quick Contact */}
-        <a
-          href="https://wa.me/213550000000"
-          target="_blank"
-          rel="noopener noreferrer"
+        {/* Dual WhatsApp Quick Popup */}
+        {showWhatsAppMenu && (
+          <div
+            style={{
+              background: 'var(--bg-card, #ffffff)',
+              borderRadius: '20px',
+              padding: '16px',
+              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.08)',
+              border: '1px solid var(--border-color)',
+              minWidth: '270px',
+              animation: 'fadeIn 0.2s ease',
+              marginBottom: '6px'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#25D366' }} />
+                <span style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                  {lang === 'ar' ? 'تواصل معنا مباشرة' : 'Contact Direct'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowWhatsAppMenu(false)}
+                aria-label="Fermer"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: '2px', display: 'flex' }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {/* Option 1: Consultations */}
+              <a
+                href="https://wa.me/213558024610"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setShowWhatsAppMenu(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '10px 12px',
+                  borderRadius: '12px',
+                  background: 'rgba(37, 211, 102, 0.1)',
+                  color: '#128C7E',
+                  textDecoration: 'none',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  transition: 'background 0.15s ease'
+                }}
+              >
+                <MessageCircle size={18} color="#25D366" />
+                <div style={{ flex: 1 }}>
+                  <div>{lang === 'ar' ? 'الاستشارات الأسرية' : 'Consultations'}</div>
+                  <div dir="ltr" style={{ fontSize: '0.78rem', fontWeight: 500, color: 'var(--text-secondary)' }}>0558 02 46 10</div>
+                </div>
+              </a>
+
+              {/* Option 2: Formations */}
+              <a
+                href="https://wa.me/213698746428"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setShowWhatsAppMenu(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '10px 12px',
+                  borderRadius: '12px',
+                  background: 'rgba(37, 99, 235, 0.08)',
+                  color: 'var(--bleu)',
+                  textDecoration: 'none',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  transition: 'background 0.15s ease'
+                }}
+              >
+                <MessageCircle size={18} color="var(--bleu)" />
+                <div style={{ flex: 1 }}>
+                  <div>{lang === 'ar' ? 'الدورات والتكوينات' : 'Formations'}</div>
+                  <div dir="ltr" style={{ fontSize: '0.78rem', fontWeight: 500, color: 'var(--text-secondary)' }}>0698 74 64 28</div>
+                </div>
+              </a>
+
+              {/* Option 3: Fixe */}
+              <a
+                href="tel:028908139"
+                onClick={() => setShowWhatsAppMenu(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '8px 12px',
+                  borderRadius: '12px',
+                  background: 'var(--bg-secondary, #f8fafc)',
+                  color: 'var(--text-secondary)',
+                  textDecoration: 'none',
+                  fontWeight: 600,
+                  fontSize: '0.82rem'
+                }}
+              >
+                <Phone size={16} />
+                <div style={{ flex: 1 }}>
+                  <span>{lang === 'ar' ? 'الهاتف الثابت: ' : 'Ligne Fixe : '}</span>
+                  <span dir="ltr">028 90 81 39</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* Floating WhatsApp Quick Contact Button */}
+        <button
+          type="button"
+          onClick={() => setShowWhatsAppMenu(!showWhatsAppMenu)}
+          aria-label={lang === 'ar' ? 'تحدث معنا عبر واتساب' : 'Discuter sur WhatsApp'}
           title={lang === 'ar' ? 'تحدث معنا عبر واتساب' : 'Discuter sur WhatsApp'}
           style={{
             width: '54px',
@@ -102,13 +217,14 @@ export default function App() {
             justifyContent: 'center',
             boxShadow: '0 8px 24px rgba(37, 211, 102, 0.45)',
             transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            border: 'none'
           }}
           onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.12)')}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
         >
-          <MessageCircle size={28} fill="white" />
-        </a>
+          {showWhatsAppMenu ? <X size={26} color="white" /> : <MessageCircle size={28} fill="white" />}
+        </button>
 
         {/* Scroll to Top Floating Button */}
         {showScrollTop && (

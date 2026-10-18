@@ -48,18 +48,70 @@ export default function Footer() {
 
           <div className="footer-col">
             <h4>{t('footer.contact')}</h4>
-            <ul>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <MapPin size={14} color="#E84D9B" />
-                {t('footer.location')}
+            <ul style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <li>
+                <a 
+                  href="https://maps.app.goo.gl/x7WfmaLJfHs4Jb3s9" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'inherit', textDecoration: 'none' }}
+                  title="Localisation Google Maps"
+                >
+                  <MapPin size={15} color="#E84D9B" style={{ flexShrink: 0 }} />
+                  <span>{t('footer.location')} (Bouzaréah)</span>
+                </a>
               </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Phone size={14} color="#E84D9B" />
-                <a href="tel:0550000000" style={{ color: 'inherit', textDecoration: 'none' }}>0550 00 00 00</a>
+              <li>
+                <a 
+                  href="https://wa.me/213558024610" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'inherit', textDecoration: 'none' }}
+                  title="WhatsApp & Appel Consultations"
+                >
+                  <Phone size={15} color="#25D366" style={{ flexShrink: 0 }} />
+                  <span>
+                    <strong>{lang === 'ar' ? 'الاستشارات: ' : 'Consultations : '}</strong>
+                    <span dir="ltr">0558 02 46 10</span>
+                  </span>
+                </a>
               </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Mail size={14} color="#E84D9B" />
-                <a href="mailto:contact@qalbi-itmaan.com" style={{ color: 'inherit', textDecoration: 'none' }}>contact@qalbi-itmaan.com</a>
+              <li>
+                <a 
+                  href="https://wa.me/213698746428" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'inherit', textDecoration: 'none' }}
+                  title="WhatsApp & Appel Formations"
+                >
+                  <Phone size={15} color="#25D366" style={{ flexShrink: 0 }} />
+                  <span>
+                    <strong>{lang === 'ar' ? 'الدورات: ' : 'Formations : '}</strong>
+                    <span dir="ltr">0698 74 64 28</span>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="tel:028908139" 
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'inherit', textDecoration: 'none' }}
+                  title="Ligne Fixe"
+                >
+                  <Phone size={15} color="#E84D9B" style={{ flexShrink: 0 }} />
+                  <span>
+                    <strong>{lang === 'ar' ? 'الثابت: ' : 'Fixe : '}</strong>
+                    <span dir="ltr">028 90 81 39</span>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="mailto:contact@qalbi-itmaan.dz" 
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'inherit', textDecoration: 'none' }}
+                >
+                  <Mail size={15} color="#E84D9B" style={{ flexShrink: 0 }} />
+                  <span>contact@qalbi-itmaan.dz</span>
+                </a>
               </li>
             </ul>
           </div>
@@ -68,14 +120,32 @@ export default function Footer() {
         <div className="footer-bottom">
           <p>{t('footer.rights')}</p>
           <div className="footer-social">
-            <a href="#" aria-label="Facebook">
+            <a 
+              href="https://www.facebook.com/profile.php/?id=100064151347005" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              aria-label="Facebook Qalbi Itmaan"
+              title="Facebook Qalbi Itmaan"
+            >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
             </a>
-            <a href="#" aria-label="Instagram">
+            <a 
+              href="https://www.instagram.com/qalbi_itmaan20/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              aria-label="Instagram Qalbi Itmaan"
+              title="Instagram @qalbi_itmaan20"
+            >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
             </a>
-            <a href="#" aria-label="Youtube">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="white"/></svg>
+            <a 
+              href="https://maps.app.goo.gl/x7WfmaLJfHs4Jb3s9" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              aria-label="Google Maps Qalbi Itmaan"
+              title="Google Maps"
+            >
+              <MapPin size={18} />
             </a>
           </div>
         </div>
