@@ -406,7 +406,13 @@ export default function HomePage() {
           <div className="formations-grid">
             {formations.slice(0, 3).map((f) => {
               const title = f.name[lang as 'fr' | 'ar' | 'en'] || f.name.fr || f.name.ar || '';
-              const priceFormatted = typeof f.price === 'number' ? `${f.price.toLocaleString()} ${t('currency')}` : f.price;
+              
+              const numPrice = typeof f.price === 'number' ? f.price : Number(f.price) || 0;
+              const priceFormatted = `${numPrice.toLocaleString()} ${t('currency')}`;
+              const numOldPrice = f.oldPrice ? Number(f.oldPrice) : 0;
+              const hasPromo = (numOldPrice > numPrice) || Boolean(f.isPromoted);
+              const discountPercent = (numOldPrice > numPrice) ? Math.round(((numOldPrice - numPrice) / numOldPrice) * 100) : 0;
+              const oldPriceFormatted = numOldPrice > 0 ? `${numOldPrice.toLocaleString()} ${t('currency')}` : '';
 
               return (
                 <div className="formation-card" key={f.id}>
@@ -415,6 +421,23 @@ export default function HomePage() {
                     <span className="formation-badge-populaire">
                       {f.type === 'online' ? t('type.online') : f.type === 'hybrid' ? t('type.hybrid') : t('type.presentiel')}
                     </span>
+                    {hasPromo && (
+                      <span style={{
+                        position: 'absolute',
+                        top: '12px',
+                        insetInlineStart: '12px',
+                        background: 'linear-gradient(135deg, #ef4444 0%, #ec4899 100%)',
+                        color: 'white',
+                        padding: '4px 10px',
+                        borderRadius: '10px',
+                        fontWeight: 800,
+                        fontSize: '0.75rem',
+                        boxShadow: '0 4px 10px rgba(239,68,68,0.4)',
+                        zIndex: 2
+                      }}>
+                        🔥 PROMO {discountPercent > 0 ? `-${discountPercent}%` : ''}
+                      </span>
+                    )}
                   </div>
                   <div className="formation-card-body">
                     <div className="formation-meta">
@@ -426,7 +449,14 @@ export default function HomePage() {
                     <div className="formation-footer">
                       <div className="formation-footer-price-row">
                         <span className="formation-price-label">{t('price.fee_label')}</span>
-                        <span className="formation-price">{priceFormatted}</span>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                          {hasPromo && numOldPrice > numPrice && (
+                            <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontSize: '0.88rem', fontWeight: 600 }}>
+                              {oldPriceFormatted}
+                            </span>
+                          )}
+                          <span className="formation-price">{priceFormatted}</span>
+                        </div>
                       </div>
                       <div className="formation-actions-grid">
                         <button 

@@ -83,6 +83,10 @@ export interface Formation {
   description: { fr: string; ar: string; en?: string };
   category: FormationCategoryObj | string;
   price: number;
+  oldPrice?: number;
+  isPromoted?: boolean;
+  promoEndDate?: string;
+  promoBadge?: string;
   duration: number;
   level: 'beginner' | 'intermediate' | 'advanced';
   type: 'presentiel' | 'online' | 'hybrid';
@@ -151,6 +155,8 @@ const DEFAULT_FORMATIONS: Formation[] = [
     },
     category: { fr: 'Couple & Famille', ar: 'الأسرة والزواج', en: 'Couples & Family' },
     price: 15000,
+    oldPrice: 22000,
+    isPromoted: true,
     duration: 12,
     level: 'beginner',
     type: 'hybrid',
@@ -217,6 +223,8 @@ const DEFAULT_FORMATIONS: Formation[] = [
     },
     category: { fr: 'Développement Personnel', ar: 'تطوير الذات', en: 'Personal Development' },
     price: 20000,
+    oldPrice: 28000,
+    isPromoted: true,
     duration: 20,
     level: 'intermediate',
     type: 'online',

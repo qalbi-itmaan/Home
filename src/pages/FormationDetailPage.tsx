@@ -3,11 +3,12 @@ import { useParams, Link } from 'react-router-dom';
 import { useLanguage } from '../lib/i18n';
 import { useToast } from '../lib/ToastContext';
 import InscriptionModal from '../components/InscriptionModal';
+import { extractYoutubeId } from '../components/StudentSpaceModal';
 import { getFormationById, getPublishedFormations, getCategoryLabel, type Formation } from '../lib/firebase';
 import { 
   GraduationCap, Clock, Award, Star, CheckCircle, ChevronDown, 
   ChevronUp, Heart, Video, FileText, Smartphone, ShieldCheck, 
-  Share2, ArrowRight, ArrowLeft, Play, X, Loader2, MessageCircle
+  Share2, ArrowRight, ArrowLeft, Play, X, Loader2, MessageCircle, Sparkles
 } from 'lucide-react';
 
 export default function FormationDetailPage() {
@@ -23,8 +24,25 @@ export default function FormationDetailPage() {
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [showInscriptionModal, setShowInscriptionModal] = useState(false);
 
-  // Real-time Countdown Timer (2 days, 14 hours, 27 mins, 36 secs)
+  // Real-time Countdown Timer (calculated dynamically or from promoEndDate)
   const [timeLeft, setTimeLeft] = useState(2 * 86400 + 14 * 3600 + 27 * 60 + 36);
+
+  useEffect(() => {
+    if (!formation) return;
+    if (formation.promoEndDate) {
+      const end = new Date(formation.promoEndDate).getTime();
+      const initial = Math.max(0, Math.floor((end - Date.now()) / 1000));
+      setTimeLeft(initial);
+    } else if (formation.isPromoted || (formation.oldPrice && formation.oldPrice > formation.price)) {
+      // Calculate remaining time until next Sunday midnight
+      const now = new Date();
+      const nextSunday = new Date();
+      nextSunday.setDate(now.getDate() + ((7 - now.getDay()) % 7 || 7));
+      nextSunday.setHours(23, 59, 59, 999);
+      const diff = Math.max(0, Math.floor((nextSunday.getTime() - now.getTime()) / 1000));
+      setTimeLeft(diff > 0 ? diff : 86400 * 2);
+    }
+  }, [formation]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -103,7 +121,22 @@ export default function FormationDetailPage() {
 
   const title = (formation.name as any)[lang] || formation.name.fr || formation.name.ar || (formation.name as any).en;
   const description = (formation.description as any)[lang] || formation.description.fr || formation.description.ar || (formation.description as any).en;
-  const priceFormatted = typeof formation.price === 'number' ? `${formation.price.toLocaleString()} ${t('currency')}` : formation.price;
+  
+  const numPrice = typeof formation.price === 'number' ? formation.price : Number(formation.price) || 0;
+  const priceFormatted = `${numPrice.toLocaleString()} ${t('currency')}`;
+  const numOldPrice = formation.oldPrice ? Number(formation.oldPrice) : 0;
+  const hasPromo = (numOldPrice > numPrice) || Boolean(formation.isPromoted);
+  const discountPercent = (numOldPrice > numPrice) ? Math.round(((numOldPrice - numPrice) / numOldPrice) * 100) : 0;
+  const savings = (numOldPrice > numPrice) ? (numOldPrice - numPrice) : 0;
+  const savingsFormatted = savings > 0 ? `${savings.toLocaleString()} ${t('currency')}` : '';
+  const oldPriceFormatted = numOldPrice > 0 ? `${numOldPrice.toLocaleString()} ${t('currency')}` : '';
+
+  const youtubeInfo = extractYoutubeId(formation.youtubeLink);
+  const youtubeEmbedUrl = youtubeInfo
+    ? youtubeInfo.isPlaylist
+      ? `https://www.youtube-nocookie.com/embed/videoseries?list=${youtubeInfo.id}&autoplay=1&rel=0`
+      : `https://www.youtube-nocookie.com/embed/${youtubeInfo.id}?autoplay=1&rel=0`
+    : null;
 
   const objectivesList = (formation.objectives as any)?.[lang] || formation.objectives?.fr || [
     'Comprendre les principes fondamentaux de la thématique',
@@ -128,20 +161,45 @@ export default function FormationDetailPage() {
       {showVideoModal && (
         <div className="modal-overlay" onClick={() => setShowVideoModal(false)}>
           <div className="modal-container" style={{ maxWidth: '800px', padding: '0', overflow: 'hidden' }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
+            <div style={{ position: 'relative', paddingTop: youtubeEmbedUrl ? '56.25%' : '0', background: '#0f172a' }}>
               <button 
                 onClick={() => setShowVideoModal(false)}
-                style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 10, background: 'rgba(255,255,255,0.8)', padding: '8px', borderRadius: '50%' }}
+                style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 10, background: 'rgba(255,255,255,0.85)', padding: '8px', borderRadius: '50%', border: 'none', cursor: 'pointer' }}
+                aria-label="Fermer"
               >
                 <X size={20} />
               </button>
-              <iframe 
-                src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1" 
-                title="Preview Video"
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-                allow="autoplay; encrypted-media"
-                allowFullScreen
-              />
+              {youtubeEmbedUrl ? (
+                <iframe 
+                  src={youtubeEmbedUrl}
+                  title={title}
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <div style={{ padding: '40px 24px', textAlign: 'center', color: 'white' }}>
+                  <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto' }}>
+                    <Video size={32} color="var(--bleu-ciel)" />
+                  </div>
+                  <h3 style={{ color: 'white', marginBottom: '8px', fontSize: '1.25rem' }}>{title}</h3>
+                  <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.92rem', maxWidth: '480px', margin: '0 auto 20px auto', lineHeight: 1.6 }}>
+                    {lang === 'ar' 
+                      ? 'محتوى الدورة متاح حصرياً للمشتركين المسجلين في فضاء الطالب. يرجى التسجيل أو التواصل معنا لمزيد من التفاصيل.' 
+                      : 'La vidéo de présentation complète est réservée aux étudiants inscrits dans leur espace de cours. Contactez-nous pour toute information.'}
+                  </p>
+                  <a
+                    href={`https://wa.me/213698746428?text=${encodeURIComponent(lang === 'ar' ? `السلام عليكم، أود الاستفسار والحصول على تفاصيل دورة: ${title}` : `Bonjour, je souhaite avoir plus de détails sur la formation : ${title}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary"
+                    style={{ gap: '8px', display: 'inline-flex' }}
+                  >
+                    <MessageCircle size={18} />
+                    <span>{lang === 'ar' ? 'تواصل معنا عبر واتساب' : 'Contacter sur WhatsApp'}</span>
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -163,8 +221,15 @@ export default function FormationDetailPage() {
           </div>
           <div className="detail-header-grid">
             <div>
-              <div className="hero-tagline" style={{ background: 'var(--rose-pastel)', color: 'var(--rose)' }}>
-                {getCategoryLabel(formation.category, lang) || t('detail.badge_popular')}
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div className="hero-tagline" style={{ background: 'var(--rose-pastel)', color: 'var(--rose)', margin: 0 }}>
+                  {getCategoryLabel(formation.category, lang) || t('detail.badge_popular')}
+                </div>
+                {hasPromo && (
+                  <div className="hero-tagline" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #ec4899 100%)', color: 'white', borderColor: 'transparent', margin: 0, fontWeight: 800 }}>
+                    🔥 {discountPercent > 0 ? `-${discountPercent}%` : (lang === 'ar' ? 'تخفيض خاص' : 'PROMOTION')}
+                  </div>
+                )}
               </div>
               <h1 style={{ textAlign: 'start', marginTop: '12px', fontSize: '2.3rem' }}>
                 {title}
@@ -387,28 +452,126 @@ export default function FormationDetailPage() {
                   padding: 'var(--card-padding)', 
                   borderRadius: '28px', 
                   boxShadow: 'var(--shadow-xl)', 
-                  border: '2px solid var(--bleu-clair)',
+                  border: hasPromo ? '2px solid #f43f5e' : '2px solid var(--bleu-clair)',
                   position: 'sticky',
-                  top: '100px'
+                  top: '100px',
+                  background: 'var(--bg-card)'
                 }}
               >
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.5px' }}>
-                  {t('detail.pricing_title')}
+                {/* Header label & Promo flash pill */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.5px' }}>
+                    {t('detail.pricing_title')}
+                  </div>
+                  {hasPromo && (
+                    <span style={{
+                      background: 'linear-gradient(135deg, #ef4444 0%, #ec4899 100%)',
+                      color: 'white',
+                      padding: '4px 10px',
+                      borderRadius: '10px',
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      boxShadow: '0 4px 12px rgba(239, 68, 68, 0.35)'
+                    }}>
+                      <Sparkles size={12} />
+                      {discountPercent > 0 ? `-${discountPercent}% PROMO` : (lang === 'ar' ? 'عرض ترويجي' : 'OFFRE PROMO')}
+                    </span>
+                  )}
                 </div>
                 
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', margin: '12px 0 20px 0' }}>
-                  <span style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--bleu-royal)', fontFamily: 'var(--font-title)' }}>
-                    {priceFormatted}
-                  </span>
+                {/* Price Display with Strikethrough & Savings */}
+                <div style={{ margin: '8px 0 16px 0' }}>
+                  {hasPromo && numOldPrice > numPrice && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                        {lang === 'ar' ? 'السعر الأصلي:' : 'Prix initial :'}
+                      </span>
+                      <span style={{
+                        fontSize: '1.2rem',
+                        color: '#94a3b8',
+                        textDecoration: 'line-through',
+                        fontWeight: 700,
+                        fontFamily: 'monospace'
+                      }}>
+                        {oldPriceFormatted}
+                      </span>
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--bleu-royal)', fontFamily: 'var(--font-title)', lineHeight: 1 }}>
+                      {priceFormatted}
+                    </span>
+                  </div>
+
+                  {hasPromo && savings > 0 && (
+                    <div style={{
+                      marginTop: '8px',
+                      background: 'rgba(16, 185, 129, 0.1)',
+                      border: '1px solid rgba(16, 185, 129, 0.3)',
+                      color: '#059669',
+                      padding: '5px 10px',
+                      borderRadius: '8px',
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}>
+                      <span>🎉 {lang === 'ar' ? `وفّر ${savingsFormatted} عند التسجيل الآن` : `Économisez ${savingsFormatted} !`}</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* Real-Time Countdown Timer */}
-                <div style={{ background: 'var(--bg-secondary)', padding: '12px', borderRadius: '16px', textAlign: 'center', marginBottom: '20px' }}>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>{t('detail.special_offer_ends')}</div>
-                  <div style={{ fontWeight: 800, color: 'var(--rose)', fontSize: '1rem', letterSpacing: '1px' }}>
-                    {formatCountdown(timeLeft)}
+                {/* Real-Time Countdown Timer (Active on promotion) */}
+                {hasPromo && timeLeft > 0 && (
+                  <div style={{
+                    background: 'linear-gradient(145deg, var(--bg-secondary) 0%, rgba(239, 68, 68, 0.05) 100%)',
+                    padding: '14px',
+                    borderRadius: '18px',
+                    textAlign: 'center',
+                    marginBottom: '20px',
+                    border: '1.5px dashed rgba(239, 68, 68, 0.4)'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, marginBottom: '8px' }}>
+                      <Clock size={15} color="var(--rose)" />
+                      <span>{t('detail.special_offer_ends')}</span>
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      fontFamily: 'monospace'
+                    }}>
+                      <div style={{ background: 'var(--bg-card)', padding: '5px 8px', borderRadius: '8px', minWidth: '40px', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--bleu)' }}>{Math.floor(timeLeft / 86400).toString().padStart(2, '0')}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{lang === 'ar' ? 'يوم' : 'j'}</div>
+                      </div>
+                      <span style={{ fontWeight: 900, color: 'var(--bleu)' }}>:</span>
+                      <div style={{ background: 'var(--bg-card)', padding: '5px 8px', borderRadius: '8px', minWidth: '40px', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--bleu)' }}>{Math.floor((timeLeft % 86400) / 3600).toString().padStart(2, '0')}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{lang === 'ar' ? 'ساعة' : 'h'}</div>
+                      </div>
+                      <span style={{ fontWeight: 900, color: 'var(--bleu)' }}>:</span>
+                      <div style={{ background: 'var(--bg-card)', padding: '5px 8px', borderRadius: '8px', minWidth: '40px', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--bleu)' }}>{Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0')}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{lang === 'ar' ? 'دقيقة' : 'm'}</div>
+                      </div>
+                      <span style={{ fontWeight: 900, color: 'var(--rose)' }}>:</span>
+                      <div style={{ background: 'var(--bg-card)', padding: '5px 8px', borderRadius: '8px', minWidth: '40px', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--rose)' }}>{(timeLeft % 60).toString().padStart(2, '0')}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{lang === 'ar' ? 'ثانية' : 's'}</div>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--rose)', fontWeight: 700, marginTop: '8px' }}>
+                      ⚡ {lang === 'ar' ? 'المقاعد محدودة بهذا السعر الترويجي' : 'Places limitées au tarif promotionnel !'}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <button 
                   className="btn btn-primary btn-lg" 

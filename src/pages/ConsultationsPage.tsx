@@ -17,7 +17,8 @@ export default function ConsultationsPage() {
   const [consultationMode, setConsultationMode] = useState<'presentiel' | 'en_ligne'>('presentiel');
   const [contactPreference, setContactPreference] = useState<'telegram' | 'whatsapp' | 'viber'>('whatsapp');
   const [duration, setDuration] = useState<number>(60); // 30, 45, or 60 min
-  const [date, setDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
+  const todayStr = new Date().toISOString().split('T')[0];
+  const [date, setDate] = useState<string>(todayStr);
   const [time, setTime] = useState<string>('09:00');
   const [notes, setNotes] = useState('');
   
@@ -44,6 +45,11 @@ export default function ConsultationsPage() {
 
     if (consultationMode === 'presentiel' && !address.trim()) {
       showToast(t('form.error.required'), 'error');
+      return;
+    }
+
+    if (date < todayStr) {
+      showToast(lang === 'ar' ? 'يرجى اختيار تاريخ اليوم أو موعد لاحق' : 'Veuillez choisir une date valide (aujourd’hui ou ultérieure)', 'error');
       return;
     }
 
@@ -278,6 +284,7 @@ export default function ConsultationsPage() {
                       type="date" 
                       className="form-input" 
                       required 
+                      min={todayStr}
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
                     />
