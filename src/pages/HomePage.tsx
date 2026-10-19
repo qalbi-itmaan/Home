@@ -72,18 +72,18 @@ export default function HomePage() {
     { icon: Award, titleKey: 'why.results.title', descKey: 'why.results.desc' },
   ];
 
-  // SINGLE EXPERT AS SPECIFIED BY USER: الاستشارية الأسرية أم درة شريشي
+  // SINGLE EXPERT AS SPECIFIED BY USER: الاستشارية الأسرية أم درة نسرين شريشي
   const experts: Expert[] = [
     {
-      name: lang === 'ar' ? 'الاستشارية الأسرية أم درة شريشي' : lang === 'en' ? 'Family Consultant Oum Dorra Cherichi' : 'Mme. Oum Dorra Cherichi',
-      specialty: lang === 'ar' ? 'استشارية أسرية وتربوية' : lang === 'en' ? 'Family & Educational Consultant' : 'Conseillère familiale & éducative',
+      name: lang === 'ar' ? 'الأستاذة أم درة نسرين شريشي' : lang === 'en' ? 'Mme Oum Dorra Nesrine Cherichi' : 'Mme Oum Dorra Nesrine Cherichi',
+      specialty: lang === 'ar' ? 'مستشارة أسرية وتربوية | مديرة المركز' : lang === 'en' ? 'Family Consultant & Center Director' : 'Conseillère familiale & Directrice du Centre',
       rating: '4.9 (350+)',
       img: './assets/images/oum-dorra-cherichi.jpeg',
       bio: lang === 'ar'
-        ? 'استشارية أسرية وتربوية جزائرية متخصصة في إصلاح ذات البين، مرافقة الأزواج، حل الخلافات الأسرية، التربية الإيجابية للأطفال، وتعديل سلوك المراهقين. تقدم استشاراتها حضورياً بمقرها في بوزريعة، الجزائر العاصمة وعن بعد عبر الإنترنت.'
+        ? 'أم درة نسرين شريشي؛ مستشارة أسرية وتربوية، ومديرة مركز "قلبي اطمأن" للتكوين والاستشارات بوزريعة (الجزائر العاصمة). حاصلة على ليسانس شريعة وقانون، ماستر في الفقه المقارن والأصول، وباحثة ماستر في علم الاجتماع العائلي بجامعة بوزريعة، مع تخصص دقيق واعتماد مهني في الإرشاد الأسري والتربوي والوساطة الاجتماعية وإصلاح ذات البين.'
         : lang === 'en'
-        ? 'Algerian family and educational consultant specializing in marital mediation, couple guidance, positive parenting, and adolescent behavioral support. Consultations available in-person in Bouzaréah, Algiers and online.'
-        : 'Conseillère familiale et éducative algérienne, spécialisée dans la médiation conjugale, la résolution des conflits familiaux, l\'éducation bienveillante et l\'accompagnement des adolescents. Consultations au cabinet à Bouzaréah, Alger ou en ligne.',
+        ? 'Family and educational consultant, and director of "Qalbi Itmaan" Center in Bouzaréah, Algiers. Holder of degrees in Sharia & Law, Comparative Jurisprudence, and completing a Master\'s in Family Sociology at the University of Bouzaréah, with professional certification in marital guidance, parenting, and family mediation.'
+        : 'Conseillère familiale et éducative, directrice du centre « Qalbi Itmaan » à Bouzaréah (Alger). Titulaire d\'une licence en droit et charia, d\'un master en droit comparé et chercheuse en sociologie de la famille à l\'université de Bouzaréah, avec une expertise certifiée en conseil conjugal, éducation bienveillante et médiation familiale.',
       availableSlots: getDynamicUpcomingSlots(lang as 'fr' | 'ar' | 'en')
     }
   ];
@@ -343,7 +343,7 @@ export default function HomePage() {
         <div className="container">
           <div className="section-title">
             <h2><span className="gradient-text">{lang === 'ar' ? 'الاستشارية الأسرية والتربوية' : lang === 'en' ? 'Our Expert Consultant' : 'Notre Conseillère Experte'}</span></h2>
-            <p className="subtitle">{lang === 'ar' ? 'مرافقة احترافية وأسرية مخصصة مع الاستشارية أم درة شريشي' : lang === 'en' ? 'Personalized, caring support with Mrs. Oum Dorra Cherichi' : 'Un accompagnement personnalisé et bienveillant avec Mme. Oum Dorra Cherichi'}</p>
+            <p className="subtitle">{lang === 'ar' ? 'مرافقة احترافية وأسرية مخصصة مع الاستشارية أم درة نسرين شريشي' : lang === 'en' ? 'Personalized, caring support with Mrs. Oum Dorra Nesrine Cherichi' : 'Un accompagnement personnalisé et bienveillant avec Mme Oum Dorra Nesrine Cherichi'}</p>
           </div>
 
           <div style={{ maxWidth: '820px', margin: '0 auto' }}>

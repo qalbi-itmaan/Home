@@ -40,7 +40,7 @@ export default function AboutPage() {
                 <div style={{ position: 'relative', display: 'inline-block' }}>
                   <img 
                     src="./assets/images/oum-dorra-cherichi.jpeg" 
-                    alt="الأستاذة أم درة شريشي" 
+                    alt={t('about.founder_name')} 
                     style={{ width: '220px', height: '220px', borderRadius: '50%', objectFit: 'cover', border: '6px solid var(--bleu-clair)', boxShadow: 'var(--shadow-lg)' }}
                   />
                   <div style={{ position: 'absolute', bottom: '10px', insetInlineEnd: '10px', background: 'var(--gradient-principal)', color: 'white', padding: '8px 16px', borderRadius: 'var(--radius-full)', fontWeight: 700, fontSize: '0.85rem' }}>
@@ -57,9 +57,9 @@ export default function AboutPage() {
                 <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '12px', fontFamily: titleFont }}>
                   {t('about.founder_name')}
                 </h2>
-                <p style={{ fontSize: '1.05rem', lineHeight: 1.8, color: 'var(--text-secondary)', marginBottom: '20px' }}>
+                <div style={{ fontSize: '1.02rem', lineHeight: 1.85, color: 'var(--text-secondary)', marginBottom: '22px', whiteSpace: 'pre-line' }}>
                   {t('about.founder_bio')}
-                </p>
+                </div>
 
                 <div className="grid-2" style={{ gap: '14px', marginBottom: '24px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.925rem', fontWeight: 600 }}>
@@ -69,6 +69,14 @@ export default function AboutPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.925rem', fontWeight: 600 }}>
                     <CheckCircle size={18} color="var(--bleu)" />
                     <span>{t('about.feature_education')}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.925rem', fontWeight: 600 }}>
+                    <GraduationCap size={18} color="var(--rose)" />
+                    <span>{t('about.feature_academic1')}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.925rem', fontWeight: 600 }}>
+                    <GraduationCap size={18} color="var(--rose)" />
+                    <span>{t('about.feature_academic2')}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.925rem', fontWeight: 600 }}>
                     <CheckCircle size={18} color="var(--bleu)" />
