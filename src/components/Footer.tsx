@@ -106,11 +106,11 @@ export default function Footer() {
               </li>
               <li>
                 <a 
-                  href="mailto:contact@qalbi-itmaan.dz" 
+                  href="mailto:qalbiitam@gmail.com" 
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'inherit', textDecoration: 'none' }}
                 >
                   <Mail size={15} color="#E84D9B" style={{ flexShrink: 0 }} />
-                  <span>contact@qalbi-itmaan.dz</span>
+                  <span>qalbiitam@gmail.com</span>
                 </a>
               </li>
             </ul>

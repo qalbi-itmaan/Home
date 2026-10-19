@@ -4,6 +4,7 @@ import { useLanguage } from '../lib/i18n';
 import ExpertModal, { Expert } from '../components/ExpertModal';
 import InscriptionModal from '../components/InscriptionModal';
 import { getPublishedFormations, type Formation } from '../lib/firebase';
+import { getDynamicUpcomingSlots } from '../lib/dateUtils';
 import {
   Heart, Users, BookOpen, GraduationCap, MessageCircle,
   Sparkles, Clock, ArrowRight, Calendar, CheckCircle2, 
@@ -77,17 +78,13 @@ export default function HomePage() {
       name: lang === 'ar' ? 'الاستشارية الأسرية أم درة شريشي' : lang === 'en' ? 'Family Consultant Oum Dorra Cherichi' : 'Mme. Oum Dorra Cherichi',
       specialty: lang === 'ar' ? 'استشارية أسرية وتربوية' : lang === 'en' ? 'Family & Educational Consultant' : 'Conseillère familiale & éducative',
       rating: '4.9 (350+)',
-      img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
+      img: './assets/images/oum-dorra-cherichi.jpeg',
       bio: lang === 'ar'
         ? 'استشارية أسرية وتربوية جزائرية متخصصة في إصلاح ذات البين، مرافقة الأزواج، حل الخلافات الأسرية، التربية الإيجابية للأطفال، وتعديل سلوك المراهقين. تقدم استشاراتها حضورياً بمقرها في بوزريعة، الجزائر العاصمة وعن بعد عبر الإنترنت.'
         : lang === 'en'
         ? 'Algerian family and educational consultant specializing in marital mediation, couple guidance, positive parenting, and adolescent behavioral support. Consultations available in-person in Bouzaréah, Algiers and online.'
         : 'Conseillère familiale et éducative algérienne, spécialisée dans la médiation conjugale, la résolution des conflits familiaux, l\'éducation bienveillante et l\'accompagnement des adolescents. Consultations au cabinet à Bouzaréah, Alger ou en ligne.',
-      availableSlots: lang === 'ar' 
-        ? ['الأحد 12 ماي - 10:00', 'الثلاثاء 14 ماي - 14:00', 'الخميس 16 ماي - 16:00']
-        : lang === 'en'
-        ? ['Sun. May 12 - 10:00 AM', 'Tue. May 14 - 2:00 PM', 'Thu. May 16 - 4:00 PM']
-        : ['Dim. 12 Mai - 10:00', 'Mar. 14 Mai - 14:00', 'Jeu. 16 Mai - 16:00']
+      availableSlots: getDynamicUpcomingSlots(lang as 'fr' | 'ar' | 'en')
     }
   ];
 
@@ -180,7 +177,7 @@ export default function HomePage() {
                 <div>
                   <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 500 }}>{t('hero.widget.next_appointment')}</div>
                   <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                    {lang === 'ar' ? 'الأربعاء 15 ماي - 16:00' : lang === 'en' ? 'Wed. May 15 - 4:00 PM' : 'Mer. 15 Mai - 16:00'}
+                    {experts[0]?.availableSlots?.[0] || (lang === 'ar' ? 'غداً - 10:00' : 'Demain - 10:00')}
                   </div>
                   <div style={{ fontSize: '0.7rem', color: 'var(--rose)', fontWeight: 600, marginTop: '2px' }}>{t('hero.widget.see_details')}</div>
                 </div>

@@ -527,6 +527,89 @@ export async function syncPendingWebInscriptions() {
   }
 }
 
+// ============================================================
+// WRITE: Submit a contact message
+// ============================================================
+export interface ContactMessageData {
+  name: string;
+  email?: string;
+  phone?: string;
+  message: string;
+}
+
+export async function submitContactMessage(data: ContactMessageData): Promise<string> {
+  const messageId = 'WEB-MSG-' + Math.floor(100000 + Math.random() * 900000);
+  const cleanData = Object.fromEntries(
+    Object.entries(data).filter(([_, v]) => v !== undefined && v !== null)
+  );
+
+  const messageDoc = {
+    ...cleanData,
+    id: messageId,
+    status: 'unread',
+    source: 'website',
+  };
+
+  try {
+    const config = getConfig();
+    if (config.apiKey && config.projectId) {
+      await ensureAuthenticated();
+      await setDoc(doc(db, 'messages', messageId), {
+        ...messageDoc,
+        createdAt: Timestamp.now(),
+      });
+      console.log('[FIREBASE] Successfully saved contact message:', messageId);
+      return messageId;
+    }
+  } catch (error) {
+    console.warn('Firebase message submission failed, saving to local storage fallback:', error);
+  }
+
+  // Local storage fallback
+  const localMessages = JSON.parse(localStorage.getItem('qalbi_website_messages') || '[]');
+  localMessages.push({
+    ...messageDoc,
+    createdAt: new Date().toISOString(),
+  });
+  localStorage.setItem('qalbi_website_messages', JSON.stringify(localMessages));
+  return messageId;
+}
+
+export async function syncPendingWebContactMessages() {
+  try {
+    const stored = localStorage.getItem('qalbi_website_messages');
+    if (!stored) return;
+    const items = JSON.parse(stored);
+    if (!Array.isArray(items) || items.length === 0) return;
+
+    await ensureAuthenticated();
+
+    const remaining = [];
+    for (const item of items) {
+      const docId = item.id || ('WEB-MSG-' + Math.floor(100000 + Math.random() * 900000));
+      try {
+        await setDoc(doc(db, 'messages', docId), {
+          ...item,
+          createdAt: Timestamp.now(),
+        });
+        console.log('[FIREBASE] Synced local contact message to Cloud:', docId);
+      } catch {
+        remaining.push(item);
+      }
+    }
+
+    if (remaining.length === 0) {
+      localStorage.removeItem('qalbi_website_messages');
+    } else {
+      localStorage.setItem('qalbi_website_messages', JSON.stringify(remaining));
+    }
+  } catch (e) {
+    console.warn('Failed to sync pending web contact messages:', e);
+  }
+}
+
 // Auto-run background sync on load
 syncPendingWebReservations();
 syncPendingWebInscriptions();
+syncPendingWebContactMessages();
+

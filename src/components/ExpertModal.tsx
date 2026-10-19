@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { X, Star, Calendar, Award, Clock } from 'lucide-react';
 import { useLanguage } from '../lib/i18n';
+import { getDynamicUpcomingSlots } from '../lib/dateUtils';
 
 export interface Expert {
   name: string;
@@ -19,7 +20,7 @@ interface ExpertModalProps {
 }
 
 export default function ExpertModal({ expert, onClose }: ExpertModalProps) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   if (!expert) return null;
 
@@ -60,7 +61,7 @@ export default function ExpertModal({ expert, onClose }: ExpertModalProps) {
             <Clock size={16} color="var(--rose)" /> {t('expert_modal.slots_title')}
           </h4>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            {(expert.availableSlots || ['Mer. 15 Mai - 14:00', 'Jeu. 16 Mai - 10:00', 'Ven. 17 Mai - 16:00']).map((slot, i) => (
+            {(expert.availableSlots || getDynamicUpcomingSlots(lang as 'fr' | 'ar' | 'en')).map((slot, i) => (
               <span key={i} className="lang-toggle" style={{ background: 'var(--bleu-clair)', color: 'var(--bleu-royal)', borderColor: 'transparent', fontWeight: 700 }}>
                 {slot}
               </span>

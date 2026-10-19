@@ -39,7 +39,7 @@ export default function AboutPage() {
               <div style={{ textAlign: 'center' }}>
                 <div style={{ position: 'relative', display: 'inline-block' }}>
                   <img 
-                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=450&q=80" 
+                    src="./assets/images/oum-dorra-cherichi.jpeg" 
                     alt="الأستاذة أم درة شريشي" 
                     style={{ width: '220px', height: '220px', borderRadius: '50%', objectFit: 'cover', border: '6px solid var(--bleu-clair)', boxShadow: 'var(--shadow-lg)' }}
                   />

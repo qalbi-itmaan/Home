@@ -2,21 +2,38 @@ import { useState } from 'react';
 import { useLanguage } from '../lib/i18n';
 import { useToast } from '../lib/ToastContext';
 import { MapPin, Phone, Mail, Clock, ArrowRight, Loader2, CheckCircle, MessageSquare } from 'lucide-react';
+import { submitContactMessage } from '../lib/firebase';
 
 export default function ContactPage() {
   const { t } = useLanguage();
   const { showToast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [submittedForm, setSubmittedForm] = useState<{ name: string; email: string; phone: string; message: string } | null>(null);
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setSuccess(true);
-    setSubmitting(false);
-    showToast(t('contact.success'), 'success');
+    try {
+      await submitContactMessage({
+        name: form.name,
+        email: form.email || undefined,
+        phone: form.phone || undefined,
+        message: form.message,
+      });
+      setSubmittedForm({ ...form });
+      setSuccess(true);
+      setForm({ name: '', email: '', phone: '', message: '' });
+      showToast(t('contact.success'), 'success');
+    } catch (err) {
+      console.warn('Contact message submission error:', err);
+      setSubmittedForm({ ...form });
+      setSuccess(true);
+      showToast(t('contact.success'), 'success');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -51,8 +68,8 @@ export default function ContactPage() {
     { 
       icon: Mail, 
       label: t('contact.email'), 
-      value: 'contact@qalbi-itmaan.dz', 
-      link: 'mailto:contact@qalbi-itmaan.dz' 
+      value: 'qalbiitam@gmail.com', 
+      link: 'mailto:qalbiitam@gmail.com' 
     },
     { 
       icon: Clock, 
@@ -239,15 +256,44 @@ export default function ContactPage() {
                     <div className="stat-icon-wrapper stat-icon-green" style={{ width: '70px', height: '70px', margin: '0 auto 16px auto' }}>
                       <CheckCircle size={40} />
                     </div>
-                    <h3 style={{ marginBottom: '8px' }}>{t('success.reservation')}</h3>
-                    <p>{t('success.reservation.desc')}</p>
-                    <button 
-                      onClick={() => setSuccess(false)} 
-                      className="btn btn-secondary" 
-                      style={{ marginTop: '24px' }}
-                    >
-                      {t('contact.send_another')}
-                    </button>
+                    <h3 style={{ marginBottom: '8px' }}>{t('contact.success')}</h3>
+                    <p style={{ color: 'var(--text-secondary)', maxWidth: '440px', margin: '0 auto 20px auto', lineHeight: 1.6 }}>
+                      {t('success.reservation.desc')}
+                    </p>
+
+                    {submittedForm && (
+                      <div style={{ margin: '20px 0', padding: '16px', background: 'var(--bg-secondary)', borderRadius: '16px', display: 'inline-block' }}>
+                        <a
+                          href={`https://wa.me/213558024610?text=${encodeURIComponent(
+                            `السلام عليكم، أنا ${submittedForm.name}.\nلقد أرسلت رسالة عبر الموقع:\n"${submittedForm.message}"\nرقم الهاتف: ${submittedForm.phone || 'غير محدد'}`
+                          )}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="btn"
+                          style={{
+                            background: '#25D366',
+                            color: 'white',
+                            fontWeight: 700,
+                            padding: '12px 20px',
+                            gap: '8px',
+                            boxShadow: '0 4px 14px rgba(37, 211, 102, 0.4)'
+                          }}
+                        >
+                          <MessageSquare size={18} />
+                          {t('contact.whatsapp.btn')}
+                        </a>
+                      </div>
+                    )}
+
+                    <div>
+                      <button 
+                        onClick={() => { setSuccess(false); setSubmittedForm(null); }} 
+                        className="btn btn-secondary" 
+                        style={{ marginTop: '12px' }}
+                      >
+                        {t('contact.send_another')}
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <>

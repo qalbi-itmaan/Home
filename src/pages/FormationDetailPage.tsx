@@ -427,7 +427,7 @@ export default function FormationDetailPage() {
                 <h2 style={{ marginBottom: '16px' }}>{t('detail.your_instructor')}</h2>
                 <div className="card" style={{ padding: '24px', borderRadius: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
                   <img 
-                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80" 
+                    src="./assets/images/oum-dorra-cherichi.jpeg" 
                     alt="Mme. Oum Dorra Cherichi" 
                     style={{ width: '90px', height: '90px', borderRadius: '50%', objectFit: 'cover' }}
                   />
