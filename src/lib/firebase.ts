@@ -371,6 +371,7 @@ export async function submitReservation(data: ReservationData): Promise<string> 
     ...cleanData,
     id: generatedId,
     trackingCode: generatedId,
+    type: 'consultation',
     customerAddress: data.address || '',
     title: data.consultationType,
     serviceName: { fr: data.consultationType, ar: data.consultationType },
@@ -378,6 +379,7 @@ export async function submitReservation(data: ReservationData): Promise<string> 
     duration: data.duration || 60,
     amount: data.amount || 4000,
     source: 'website',
+    createdBy: 'Site Web',
   };
 
   try {
