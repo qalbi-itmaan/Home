@@ -427,7 +427,7 @@ export default function FormationDetailPage() {
                 <h2 style={{ marginBottom: '16px' }}>{t('detail.your_instructor')}</h2>
                 <div className="card" style={{ padding: '24px', borderRadius: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
                   <img 
-                    src="./assets/images/oum-dorra-cherichi.jpeg" 
+                    src="./assets/images/oum-dorra-cherichi.webp" 
                     alt={t('about.founder_name')} 
                     style={{ width: '90px', height: '90px', borderRadius: '50%', objectFit: 'cover' }}
                   />

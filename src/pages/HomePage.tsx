@@ -78,7 +78,7 @@ export default function HomePage() {
       name: lang === 'ar' ? 'الأستاذة أم درة نسرين شريشي' : lang === 'en' ? 'Mme Oum Dorra Nesrine Cherichi' : 'Mme Oum Dorra Nesrine Cherichi',
       specialty: lang === 'ar' ? 'مستشارة أسرية وتربوية | مديرة المركز' : lang === 'en' ? 'Family Consultant & Center Director' : 'Conseillère familiale & Directrice du Centre',
       rating: '4.9 (350+)',
-      img: './assets/images/oum-dorra-cherichi.jpeg',
+      img: './assets/images/oum-dorra-cherichi.webp',
       bio: lang === 'ar'
         ? 'أم درة نسرين شريشي؛ مستشارة أسرية وتربوية، ومديرة مركز "قلبي اطمأن" للتكوين والاستشارات بوزريعة (الجزائر العاصمة). حاصلة على ليسانس شريعة وقانون، ماستر في الفقه المقارن والأصول، وباحثة ماستر في علم الاجتماع العائلي بجامعة بوزريعة، مع تخصص دقيق واعتماد مهني في الإرشاد الأسري والتربوي والوساطة الاجتماعية وإصلاح ذات البين.'
         : lang === 'en'
@@ -164,8 +164,10 @@ export default function HomePage() {
             <div className="hero-visual-wrapper">
               <div className="hero-image-natural">
                 <img 
-                  src="./assets/images/hero.png" 
+                  src="./assets/images/hero.webp" 
                   alt="Family Consultation Qalbi Itmaan" 
+                  loading="eager"
+                  fetchPriority="high"
                 />
               </div>
 

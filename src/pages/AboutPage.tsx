@@ -39,7 +39,7 @@ export default function AboutPage() {
               <div style={{ textAlign: 'center' }}>
                 <div style={{ position: 'relative', display: 'inline-block' }}>
                   <img 
-                    src="./assets/images/oum-dorra-cherichi.jpeg" 
+                    src="./assets/images/oum-dorra-cherichi.webp" 
                     alt={t('about.founder_name')} 
                     style={{ width: '220px', height: '220px', borderRadius: '50%', objectFit: 'cover', border: '6px solid var(--bleu-clair)', boxShadow: 'var(--shadow-lg)' }}
                   />
