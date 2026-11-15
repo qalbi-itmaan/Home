@@ -405,7 +405,11 @@ export default function HomePage() {
 
           <div className="formations-grid">
             {formations.slice(0, 3).map((f) => {
-              const title = f.name[lang as 'fr' | 'ar' | 'en'] || f.name.fr || f.name.ar || '';
+              const title = typeof f.name === 'string'
+                ? f.name
+                : (f.name && typeof f.name === 'object'
+                    ? (f.name[lang as 'fr' | 'ar' | 'en'] || f.name.fr || f.name.ar || (f.name as any).en || '')
+                    : '');
               
               const numPrice = typeof f.price === 'number' ? f.price : Number(f.price) || 0;
               const priceFormatted = `${numPrice.toLocaleString()} ${t('currency')}`;

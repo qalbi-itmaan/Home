@@ -196,11 +196,7 @@ export async function getPublishedFormations(_forceRefresh = false): Promise<For
     if (config.apiKey && config.projectId) {
       await ensureAuthenticated();
 
-      const q = query(
-        collection(db, 'services'),
-        where('isActive', '==', true)
-      );
-      const snapshot = await getDocs(q);
+      const snapshot = await getDocs(collection(db, 'services'));
       const rawFormations = snapshot.docs
         .map(docSnap => ({
           id: docSnap.id,

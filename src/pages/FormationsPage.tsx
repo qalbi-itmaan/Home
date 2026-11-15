@@ -42,13 +42,20 @@ export default function FormationsPage() {
     return Array.from(catMap.values());
   }, [formations, lang, t]);
 
-  const filteredFormations = formations.filter((f) => {
-    const title = f.name[lang as 'fr' | 'ar' | 'en'] || f.name.fr || f.name.ar || f.name.en || '';
-    const desc = f.description[lang as 'fr' | 'ar' | 'en'] || f.description.fr || f.description.ar || f.description.en || '';
+  const pickLang = (val: unknown): string => {
+    if (typeof val === 'string') return val;
+    if (val && typeof val === 'object') {
+      const rec = val as Record<string, string | undefined>;
+      return rec[lang] || rec.fr || rec.ar || rec.en || '';
+    }
+    return '';
+  };
 
-    const catKey = (typeof f.category === 'object'
-      ? (f.category.fr || f.category.ar || f.category.en || '')
-      : String(f.category)).toLowerCase().trim();
+  const filteredFormations = formations.filter((f) => {
+    const title = pickLang(f.name);
+    const desc = pickLang(f.description);
+
+    const catKey = pickLang(f.category).toLowerCase().trim();
 
     const matchesCategory = activeCategory === 'all' || catKey === activeCategory;
     const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -145,8 +152,8 @@ export default function FormationsPage() {
           ) : (
             <div className="formations-grid">
               {filteredFormations.map((f) => {
-                const title = f.name[lang as 'fr' | 'ar' | 'en'] || f.name.fr || f.name.ar || (f.name as any).en || '';
-                const desc = f.description[lang as 'fr' | 'ar' | 'en'] || f.description.fr || f.description.ar || (f.description as any).en || '';
+                const title = pickLang(f.name);
+                const desc = pickLang(f.description);
                 
                 const numPrice = typeof f.price === 'number' ? f.price : Number(f.price) || 0;
                 const priceFormatted = `${numPrice.toLocaleString()} ${t('currency')}`;

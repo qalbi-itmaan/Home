@@ -118,8 +118,16 @@ export default function FormationDetailPage() {
     );
   }
 
-  const title = (formation.name as any)[lang] || formation.name.fr || formation.name.ar || (formation.name as any).en;
-  const description = (formation.description as any)[lang] || formation.description.fr || formation.description.ar || (formation.description as any).en;
+  const pickLang = (val: unknown): string => {
+    if (typeof val === 'string') return val;
+    if (val && typeof val === 'object') {
+      const rec = val as Record<string, string | undefined>;
+      return rec[lang] || rec.fr || rec.ar || rec.en || '';
+    }
+    return '';
+  };
+  const title = pickLang(formation.name);
+  const description = pickLang(formation.description);
   
   const numPrice = typeof formation.price === 'number' ? formation.price : Number(formation.price) || 0;
   const priceFormatted = `${numPrice.toLocaleString()} ${t('currency')}`;
