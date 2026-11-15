@@ -49,7 +49,7 @@ export default function HomePage() {
   const [formations, setFormations] = useState<Formation[]>([]);
 
   useEffect(() => {
-    getPublishedFormations()
+    getPublishedFormations(true)
       .then((data) => setFormations(data.slice(0, 4)))
       .catch(() => {});
   }, []);
@@ -390,6 +390,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== FORMATIONS MISES EN AVANT ===== */}
+      {formations.length > 0 && (
       <section className="section bg-secondary" style={{ background: 'var(--bg-secondary)' }}>
         <div className="container">
           <div className="section-title section-title-split">
@@ -481,6 +482,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ===== FAQ SECTION ACCORDION ===== */}
       <section className="section">

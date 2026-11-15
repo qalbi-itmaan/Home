@@ -17,7 +17,7 @@ export default function FormationsPage() {
   const [selectedFormationForInscription, setSelectedFormationForInscription] = useState<Formation | null>(null);
 
   useEffect(() => {
-    getPublishedFormations()
+    getPublishedFormations(true)
       .then((data) => setFormations(data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
@@ -123,6 +123,24 @@ export default function FormationsPage() {
             <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--text-secondary)' }}>
               <Loader2 size={36} style={{ animation: 'spin 1s linear infinite' }} />
               <p style={{ marginTop: '12px' }}>{t('formations.loading')}</p>
+            </div>
+          ) : filteredFormations.length === 0 ? (
+            <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--text-secondary)', background: 'var(--bg-secondary)', borderRadius: '24px' }}>
+              <GraduationCap size={48} style={{ opacity: 0.4, margin: '0 auto 12px' }} />
+              <h3 style={{ marginBottom: '8px', color: 'var(--text-primary)' }}>
+                {lang === 'ar'
+                  ? 'لا توجد دورات مفتوحة للتسجيل حالياً'
+                  : lang === 'en'
+                  ? 'No courses with open sessions at the moment'
+                  : 'Aucune session de formation ouverte actuellement'}
+              </h3>
+              <p style={{ maxWidth: '520px', margin: '0 auto' }}>
+                {lang === 'ar'
+                  ? 'سيتم عرض الدورات التدريبية هنا بمجرد فتح جلسة جديدة للتسجيل.'
+                  : lang === 'en'
+                  ? 'Courses will appear here as soon as a new session is opened for enrollment.'
+                  : 'Les formations s\'afficheront ici dès qu\'une nouvelle session sera ouverte aux inscriptions.'}
+              </p>
             </div>
           ) : (
             <div className="formations-grid">

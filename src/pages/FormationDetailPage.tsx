@@ -59,9 +59,8 @@ export default function FormationDetailPage() {
         if (data) {
           setFormation(data);
         } else {
-          // Fallback to searching published formations
-          return getPublishedFormations().then((all) => {
-            const match = all.find((f) => f.id === id) || all[0];
+          return getPublishedFormations(true).then((all) => {
+            const match = all.find((f) => f.id === id);
             setFormation(match || null);
           });
         }

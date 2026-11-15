@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, CheckCircle, Loader2, GraduationCap } from 'lucide-react';
+import { X, CheckCircle, Loader2, GraduationCap, Calendar } from 'lucide-react';
 import { useLanguage } from '../lib/i18n';
 import { useToast } from '../lib/ToastContext';
 import { submitInscription, getCategoryLabel, type Formation } from '../lib/firebase';
@@ -17,10 +17,21 @@ export default function InscriptionModal({ formation, onClose }: InscriptionModa
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
+  const [selectedSessionId, setSelectedSessionId] = useState('');
   const [notes, setNotes] = useState('');
 
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ trackingNumber: string; accessPassword: string } | null>(null);
+
+  const openSessions = formation?.openSessions || [];
+
+  useEffect(() => {
+    if (openSessions.length > 0) {
+      setSelectedSessionId(openSessions[0].id);
+    } else {
+      setSelectedSessionId('');
+    }
+  }, [formation]);
 
   if (!formation) return null;
 
@@ -35,11 +46,18 @@ export default function InscriptionModal({ formation, onClose }: InscriptionModa
       return;
     }
 
+    const chosenSession = openSessions.find(s => s.id === selectedSessionId) || openSessions[0];
+    const sessionNameStr = chosenSession
+      ? `${chosenSession.startDate || ''}${chosenSession.endDate ? ` / ${chosenSession.endDate}` : ''}${chosenSession.schedule ? ` (${chosenSession.schedule})` : ''}`.trim()
+      : undefined;
+
     setSubmitting(true);
     try {
       const res = await submitInscription({
         formationId: formation.id,
         formationName: formationTitle,
+        sessionId: chosenSession?.id || undefined,
+        sessionName: sessionNameStr || undefined,
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim(),
         customerEmail: customerEmail.trim() || undefined,
@@ -161,6 +179,42 @@ export default function InscriptionModal({ formation, onClose }: InscriptionModa
             </div>
 
             <form onSubmit={handleSubmit}>
+              {openSessions.length > 0 && (
+                <div className="form-group" style={{ marginBottom: '16px' }}>
+                  <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Calendar size={15} />
+                    {lang === 'ar' ? 'الجلسة المفتوحة' : lang === 'en' ? 'Open Session' : 'Session ouverte'}
+                  </label>
+                  {openSessions.length === 1 ? (
+                    <div style={{
+                      padding: '10px 14px',
+                      borderRadius: '12px',
+                      background: 'rgba(16, 185, 129, 0.08)',
+                      border: '1px solid rgba(16, 185, 129, 0.25)',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.9rem',
+                      fontWeight: 600
+                    }}>
+                      📅 {openSessions[0].startDate}
+                      {openSessions[0].endDate ? ` → ${openSessions[0].endDate}` : ''}
+                      {openSessions[0].schedule ? ` • ${openSessions[0].schedule}` : ''}
+                    </div>
+                  ) : (
+                    <select
+                      className="form-input"
+                      value={selectedSessionId}
+                      onChange={(e) => setSelectedSessionId(e.target.value)}
+                    >
+                      {openSessions.map(s => (
+                        <option key={s.id} value={s.id}>
+                          {s.startDate}{s.endDate ? ` → ${s.endDate}` : ''}{s.schedule ? ` (${s.schedule})` : ''}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              )}
+
               <div className="form-group" style={{ marginBottom: '16px' }}>
                 <label className="form-label">{t('inscription.name_label')} *</label>
                 <input 

@@ -77,6 +77,20 @@ export interface FormationCategoryObj {
   en?: string;
 }
 
+export interface OpenSessionInfo {
+  id: string;
+  formationId: string;
+  formationName?: string;
+  startDate: string;
+  endDate: string;
+  schedule: string;
+  capacity?: number;
+  enrolled?: number;
+  instructor?: string;
+  location?: string;
+  status: 'open' | 'in_progress' | 'completed' | 'cancelled';
+}
+
 export interface Formation {
   id: string;
   name: { fr: string; ar: string; en?: string };
@@ -99,6 +113,8 @@ export interface Formation {
   targetAudience: { fr: string[]; ar: string[]; en?: string[] };
   isActive: boolean;
   publishedOnWebsite: boolean;
+  hasOpenSession?: boolean;
+  openSessions?: OpenSessionInfo[];
 }
 
 const CATEGORY_MAP: Record<string, { fr: string; ar: string; en: string }> = {
@@ -140,204 +156,143 @@ export interface CurriculumModule {
   items: string[];
 }
 
-const DEFAULT_FORMATIONS: Formation[] = [
-  {
-    id: 'f1',
-    name: {
-      fr: 'Communication Positive dans le Couple',
-      ar: 'التواصل الإيجابي في الحياة الزوجية',
-      en: 'Positive Communication for Couples',
-    },
-    description: {
-      fr: 'Apprenez à mieux communiquer avec votre conjoint pour renforcer votre complicité et résoudre les conflits avec bienveillance.',
-      ar: 'تعلم أساسيات التواصل الإيجابي وتجاوز الخلافات الزوجية بحكمة وتفهم.',
-      en: 'Learn how to communicate effectively with your partner to strengthen intimacy and resolve conflict with empathy.',
-    },
-    category: { fr: 'Couple & Famille', ar: 'الأسرة والزواج', en: 'Couples & Family' },
-    price: 15000,
-    oldPrice: 22000,
-    isPromoted: true,
-    duration: 12,
-    level: 'beginner',
-    type: 'hybrid',
-    image: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&q=80&w=600',
-    objectives: {
-      fr: ['Comprendre les styles de communication', 'Gérer les émotions lors des désaccords', 'Développer l’écoute active'],
-      ar: ['فهم أنماط التواصل الزوجي', 'إدارة المشاعر أثناء الخلافات', 'تطوير مهارة الاستماع الفعال'],
-      en: ['Understand communication styles', 'Manage emotions during disagreements', 'Master active listening']
-    },
-    curriculum: {
-      fr: [{ title: 'Module 1: Les bases de la communication', items: ['Écoute active', 'Langages de l’amour'] }],
-      ar: [{ title: 'المحور الأول: أساسيات التواصل', items: ['الاستماع الفعال', 'لغات الحب الخمس'] }],
-      en: [{ title: 'Module 1: Fundamentals of Communication', items: ['Active Listening', 'The 5 Love Languages'] }]
-    },
-    prerequisites: { fr: ['Aucun prérequis'], ar: ['لا توجد متطلبات'], en: ['No prerequisites'] },
-    targetAudience: { fr: ['Couples et futurs mariés'], ar: ['الأزواج والمقبلون على الزواج'], en: ['Couples and newlyweds'] },
-    isActive: true,
-    publishedOnWebsite: true,
-  },
-  {
-    id: 'f2',
-    name: {
-      fr: 'Éducation Bienveillante & Gestion des Émotions chez l’Enfant',
-      ar: 'التربية الإيجابية وإدارة مشاعر الطفل',
-      en: 'Positive Parenting & Managing Children’s Emotions',
-    },
-    description: {
-      fr: 'Des outils pratiques pour accompagner le développement de votre enfant, gérer les crises et instaurer une discipline positive.',
-      ar: 'أدوات عملية لمرافقة نمو طفلك والتعامل مع نوبات الغضب بأساليب تربوية حديثة.',
-      en: 'Practical tools to nurture your child’s emotional development, handle tantrums, and implement positive discipline.',
-    },
-    category: { fr: 'Éducation', ar: 'التربية', en: 'Education' },
-    price: 18000,
-    duration: 16,
-    level: 'beginner',
-    type: 'presentiel',
-    image: 'https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?auto=format&fit=crop&q=80&w=600',
-    objectives: {
-      fr: ['Comprendre le cerveau de l’enfant', 'Accompagner les émotions sans crier', 'Instaurer un cadre sécurisant'],
-      ar: ['فهم التطور العاطفي للطفل', 'التعامل مع المشاعر بدون صراخ', 'وضع حدود واضحة وبناءة'],
-      en: ['Understand child neurodevelopment', 'Guide emotions without yelling', 'Establish safe, loving boundaries']
-    },
-    curriculum: {
-      fr: [{ title: 'Module 1: Le développement de l’enfant', items: ['Neurosciences et émotions'] }],
-      ar: [{ title: 'المحور الأول: نمو الطفل العاطفي', items: ['علم الأعصاب والمشاعر'] }],
-      en: [{ title: 'Module 1: Child Development', items: ['Neuroscience & Emotions'] }]
-    },
-    prerequisites: { fr: ['Aucun prérequis'], ar: ['لا توجد متطلبات'], en: ['No prerequisites'] },
-    targetAudience: { fr: ['Parents et éducateurs'], ar: ['الأولياء والمربون'], en: ['Parents and educators'] },
-    isActive: true,
-    publishedOnWebsite: true,
-  },
-  {
-    id: 'f3',
-    name: {
-      fr: 'Gestion du Stress et Confiance en Soi',
-      ar: 'إدارة الضغوطات وتعزيز الثقة بالنفس',
-      en: 'Stress Management & Self-Confidence',
-    },
-    description: {
-      fr: 'Développez des stratégies efficaces pour canaliser votre anxiété au quotidien et retrouver une sérénité durable.',
-      ar: 'تطوير استراتيجيات عملية لتجاوز القلق اليومي واستعادة التوازن النفسي والسكينة.',
-      en: 'Develop proven strategies to manage daily anxiety and cultivate lasting inner peace and self-esteem.',
-    },
-    category: { fr: 'Développement Personnel', ar: 'تطوير الذات', en: 'Personal Development' },
-    price: 20000,
-    oldPrice: 28000,
-    isPromoted: true,
-    duration: 20,
-    level: 'intermediate',
-    type: 'online',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=600',
-    objectives: {
-      fr: ['Identifier les déclencheurs du stress', 'Pratiquer la méditation et la respiration', 'Renforcer l’estime de soi'],
-      ar: ['تحديد مسببات الضغط النفسي', 'تقنيات التنفس والاسترخاء', 'تعزيز التقدير الذاتي'],
-      en: ['Identify stress triggers', 'Practice breathing and relaxation techniques', 'Build healthy self-esteem']
-    },
-    curriculum: {
-      fr: [{ title: 'Module 1: Comprendre le stress', items: ['Physiologie du stress', 'Exercices de relaxation'] }],
-      ar: [{ title: 'المحور الأول: فهم ميكانيزمات الضغط', items: ['فيزيولوجيا القلق', 'تمارين الاسترخاء'] }],
-      en: [{ title: 'Module 1: Understanding Stress', items: ['Physiology of Stress', 'Relaxation Exercises'] }]
-    },
-    prerequisites: { fr: ['Aucun prérequis'], ar: ['لا توجد متطلبات'], en: ['No prerequisites'] },
-    targetAudience: { fr: ['Toute personne cherchant l’épanouissement'], ar: ['كل من يبحث عن التوازن'], en: ['Anyone seeking balance and fulfillment'] },
-    isActive: true,
-    publishedOnWebsite: true,
+const STATIC_DEMO_FORMATION_IDS = new Set(['f1', 'f2', 'f3']);
+const STATIC_DEMO_TITLES = new Set([
+  'communication positive dans le couple',
+  'positive communication for couples',
+  'التواصل الإيجابي في الحياة الزوجية',
+  'éducation bienveillante & gestion des émotions chez l’enfant',
+  "éducation bienveillante & gestion des émotions chez l'enfant",
+  'positive parenting & managing children’s emotions',
+  "positive parenting & managing children's emotions",
+  'التربية الإيجابية وإدارة مشاعر الطفل',
+  'gestion du stress et confiance en soi',
+  'stress management & self-confidence',
+  'إدارة الضغوطات وتعزيز الثقة بالنفس',
+]);
+
+export function isStaticDemoFormation(f: Partial<Formation> | null | undefined): boolean {
+  if (!f) return false;
+  if (f.id && STATIC_DEMO_FORMATION_IDS.has(String(f.id).trim().toLowerCase())) return true;
+  const fr = (f.name?.fr || '').trim().toLowerCase();
+  const en = (f.name?.en || '').trim().toLowerCase();
+  const ar = (f.name?.ar || '').trim().toLowerCase();
+  if ((fr && STATIC_DEMO_TITLES.has(fr)) || (en && STATIC_DEMO_TITLES.has(en)) || (ar && STATIC_DEMO_TITLES.has(ar))) {
+    return true;
   }
-];
+  return false;
+}
 
-// 1-hour cache in localStorage to maximize cost-savings on Firebase reads
-let formationsMemoryCache: { data: Formation[]; timestamp: number } | null = null;
-const FORMATIONS_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
-
-export async function getPublishedFormations(forceRefresh = false): Promise<Formation[]> {
-  const now = Date.now();
-  if (!forceRefresh && formationsMemoryCache && (now - formationsMemoryCache.timestamp < FORMATIONS_CACHE_TTL_MS)) {
-    return formationsMemoryCache.data;
-  }
-
-  // Check persistent localStorage first to save reads across visits
-  if (!forceRefresh && typeof localStorage !== 'undefined') {
+export async function getPublishedFormations(_forceRefresh = false): Promise<Formation[]> {
+  // Always clear legacy localStorage cache so session openings/closings reflect immediately
+  if (typeof localStorage !== 'undefined') {
     try {
-      const stored = localStorage.getItem('qalbi_formations_cache');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed.timestamp && (now - parsed.timestamp < FORMATIONS_CACHE_TTL_MS) && Array.isArray(parsed.data) && parsed.data.length > 0) {
-          formationsMemoryCache = parsed;
-          return parsed.data;
-        }
-      }
+      localStorage.removeItem('qalbi_formations_cache');
     } catch { /* ignore */ }
   }
 
   try {
     const config = getConfig();
     if (config.apiKey && config.projectId) {
+      await ensureAuthenticated();
+
       const q = query(
         collection(db, 'services'),
-        where('publishedOnWebsite', '==', true),
         where('isActive', '==', true)
       );
       const snapshot = await getDocs(q);
-      const results = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Formation[];
-      if (results.length > 0) {
-        formationsMemoryCache = { data: results, timestamp: now };
-        try {
-          if (typeof localStorage !== 'undefined') {
-            localStorage.setItem('qalbi_formations_cache', JSON.stringify(formationsMemoryCache));
+      const rawFormations = snapshot.docs
+        .map(docSnap => ({
+          id: docSnap.id,
+          ...docSnap.data()
+        }) as Formation)
+        .filter(f => !isStaticDemoFormation(f) && f.publishedOnWebsite !== false && f.isActive !== false);
+
+      // Query open sessions directly from 'sessions' collection if accessible
+      const openSessionsByFormation = new Map<string, OpenSessionInfo[]>();
+      let sessionsCollectionAccessible = false;
+      try {
+        const sessionsQuery = query(
+          collection(db, 'sessions'),
+          where('status', '==', 'open')
+        );
+        const sessionsSnap = await getDocs(sessionsQuery);
+        sessionsCollectionAccessible = true;
+        sessionsSnap.docs.forEach(sDoc => {
+          const sData = sDoc.data() as any;
+          if (sData.formationId && sData.status === 'open') {
+            const list = openSessionsByFormation.get(sData.formationId) || [];
+            list.push({
+              id: sDoc.id,
+              formationId: sData.formationId,
+              formationName: sData.formationName || '',
+              startDate: sData.startDate || '',
+              endDate: sData.endDate || '',
+              schedule: sData.schedule || '',
+              capacity: sData.capacity || 20,
+              enrolled: sData.enrolled || 0,
+              instructor: sData.instructor || '',
+              location: sData.location || '',
+              status: 'open',
+            });
+            openSessionsByFormation.set(sData.formationId, list);
           }
-        } catch { /* ignore */ }
-        return results;
+        });
+      } catch {
+        // If 'sessions' collection read is restricted by un-deployed rules, fallback to embedded openSessions on services doc
       }
+
+      // Filter: ONLY show formations that have at least one open session
+      const formationsWithOpenSession = rawFormations
+        .map(f => {
+          const fromSessionsCol = openSessionsByFormation.get(f.id) || [];
+          const fromEmbedded = Array.isArray(f.openSessions)
+            ? f.openSessions.filter(s => s && s.status === 'open')
+            : [];
+
+          const mergedMap = new Map<string, OpenSessionInfo>();
+          if (sessionsCollectionAccessible) {
+            fromSessionsCol.forEach(s => mergedMap.set(s.id, s));
+            // Also include embedded if sessions collection was empty for this formation but hasOpenSession is true
+            if (mergedMap.size === 0 && f.hasOpenSession === true) {
+              fromEmbedded.forEach(s => mergedMap.set(s.id, s));
+            }
+          } else {
+            fromEmbedded.forEach(s => mergedMap.set(s.id, s));
+          }
+
+          const openSessions = Array.from(mergedMap.values()).sort((a, b) =>
+            (a.startDate || '').localeCompare(b.startDate || '')
+          );
+          const hasOpen = sessionsCollectionAccessible
+            ? (fromSessionsCol.length > 0 || (f.hasOpenSession === true && fromEmbedded.length > 0))
+            : (openSessions.length > 0 || f.hasOpenSession === true);
+
+          return {
+            ...f,
+            hasOpenSession: hasOpen,
+            openSessions,
+          };
+        })
+        .filter(f => f.hasOpenSession === true);
+
+      return formationsWithOpenSession;
     }
   } catch (error) {
-    console.warn('Firebase fetching failed, returning default formations:', error);
+    console.warn('Firebase fetching formations failed:', error);
   }
-  return DEFAULT_FORMATIONS;
+  return [];
 }
 
 export async function getFormationById(id: string): Promise<Formation | null> {
-  // 1. Check memory cache first (0 Firestore read)
-  if (formationsMemoryCache?.data) {
-    const found = formationsMemoryCache.data.find(f => f.id === id);
-    if (found) return found;
-  }
-
-  // 2. Check localStorage cached list (0 Firestore read)
-  if (typeof localStorage !== 'undefined') {
-    try {
-      const stored = localStorage.getItem('qalbi_formations_cache');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed.data)) {
-          const found = parsed.data.find((f: Formation) => f.id === id);
-          if (found) return found;
-        }
-      }
-    } catch { /* ignore */ }
-  }
-
-  // 3. Check bundled default formations (0 Firestore read)
-  const defaultFound = DEFAULT_FORMATIONS.find(f => f.id === id);
-  if (defaultFound) return defaultFound;
-
-  // 4. Single document fetch only if not in any cache
   try {
-    const config = getConfig();
-    if (config.apiKey && config.projectId) {
-      const { doc: docRef, getDoc } = await import('firebase/firestore');
-      const docSnap = await getDoc(docRef(db, 'services', id));
-      if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() } as Formation;
-      }
-    }
+    const published = await getPublishedFormations(true);
+    const found = published.find(f => f.id === id);
+    return found || null;
   } catch (error) {
     console.warn('Error fetching formation from Firebase:', error);
+    return null;
   }
-  return null;
 }
 
 // ============================================================
@@ -417,12 +372,15 @@ export interface InscriptionData {
   customerEmail?: string;
   formationId: string;
   formationName: string;
+  sessionId?: string;
+  sessionName?: string;
   notes?: string;
 }
 
 export async function submitInscription(data: InscriptionData): Promise<{ trackingNumber: string; accessPassword: string }> {
   const trackingNumber = 'WEB-INS-' + Math.floor(100000 + Math.random() * 900000);
   const accessPassword = 'QI-' + Math.floor(1000 + Math.random() * 9000);
+  const nowMs = Date.now();
 
   const cleanData = Object.fromEntries(
     Object.entries(data).filter(([_, v]) => v !== undefined)
@@ -440,6 +398,7 @@ export async function submitInscription(data: InscriptionData): Promise<{ tracki
         accessGranted: true,
         source: 'website',
         createdAt: Timestamp.now(),
+        createdAtMs: nowMs,
       });
       return { trackingNumber, accessPassword };
     }
@@ -456,7 +415,8 @@ export async function submitInscription(data: InscriptionData): Promise<{ tracki
     accessPassword,
     accessGranted: true,
     source: 'website',
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(nowMs).toISOString(),
+    createdAtMs: nowMs,
   };
   localInscriptions.push(newInscription);
   localStorage.setItem('qalbi_website_inscriptions', JSON.stringify(localInscriptions));
