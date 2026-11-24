@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../lib/i18n';
 import InscriptionModal from '../components/InscriptionModal';
-import { getPublishedFormations, getCategoryLabel, type Formation } from '../lib/firebase';
+import { getPublishedFormations, getCategoryLabel, pickLocalizedText, type Formation } from '../lib/firebase';
 import { 
   GraduationCap, Clock, ArrowRight, Search, 
   User, Loader2
@@ -42,20 +42,11 @@ export default function FormationsPage() {
     return Array.from(catMap.values());
   }, [formations, lang, t]);
 
-  const pickLang = (val: unknown): string => {
-    if (typeof val === 'string') return val;
-    if (val && typeof val === 'object') {
-      const rec = val as Record<string, string | undefined>;
-      return rec[lang] || rec.fr || rec.ar || rec.en || '';
-    }
-    return '';
-  };
-
   const filteredFormations = formations.filter((f) => {
-    const title = pickLang(f.name);
-    const desc = pickLang(f.description);
+    const title = pickLocalizedText(f.name, lang);
+    const desc = pickLocalizedText(f.description, lang);
 
-    const catKey = pickLang(f.category).toLowerCase().trim();
+    const catKey = pickLocalizedText(f.category, lang).toLowerCase().trim();
 
     const matchesCategory = activeCategory === 'all' || catKey === activeCategory;
     const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -152,8 +143,8 @@ export default function FormationsPage() {
           ) : (
             <div className="formations-grid">
               {filteredFormations.map((f) => {
-                const title = pickLang(f.name);
-                const desc = pickLang(f.description);
+                const title = pickLocalizedText(f.name, lang);
+                const desc = pickLocalizedText(f.description, lang);
                 
                 const numPrice = typeof f.price === 'number' ? f.price : Number(f.price) || 0;
                 const priceFormatted = `${numPrice.toLocaleString()} ${t('currency')}`;

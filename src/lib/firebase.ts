@@ -151,6 +151,17 @@ export function getCategoryLabel(category: any, lang: string): string {
   return rawStr;
 }
 
+export function pickLocalizedText(val: unknown, lang: string): string {
+  if (typeof val === 'string') return val;
+  if (val && typeof val === 'object') {
+    const rec = val as Record<string, string | undefined>;
+    const candidates = [rec[lang], rec.fr, rec.ar, rec.en].map(v => (v || '').trim());
+    const full = candidates.find(v => v.length > 1) || candidates.find(v => v.length > 0);
+    return full || '';
+  }
+  return '';
+}
+
 export interface CurriculumModule {
   title: string;
   items: string[];

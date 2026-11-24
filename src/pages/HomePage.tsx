@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../lib/i18n';
 import ExpertModal, { Expert } from '../components/ExpertModal';
 import InscriptionModal from '../components/InscriptionModal';
-import { getPublishedFormations, type Formation } from '../lib/firebase';
+import { getPublishedFormations, pickLocalizedText, type Formation } from '../lib/firebase';
 import { getDynamicUpcomingSlots } from '../lib/dateUtils';
 import {
   Heart, Users, BookOpen, GraduationCap, MessageCircle,
@@ -405,11 +405,7 @@ export default function HomePage() {
 
           <div className="formations-grid">
             {formations.slice(0, 3).map((f) => {
-              const title = typeof f.name === 'string'
-                ? f.name
-                : (f.name && typeof f.name === 'object'
-                    ? (f.name[lang as 'fr' | 'ar' | 'en'] || f.name.fr || f.name.ar || (f.name as any).en || '')
-                    : '');
+              const title = pickLocalizedText(f.name, lang);
               
               const numPrice = typeof f.price === 'number' ? f.price : Number(f.price) || 0;
               const priceFormatted = `${numPrice.toLocaleString()} ${t('currency')}`;

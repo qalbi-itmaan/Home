@@ -4,7 +4,7 @@ import { useLanguage } from '../lib/i18n';
 import { useToast } from '../lib/ToastContext';
 import InscriptionModal from '../components/InscriptionModal';
 import { extractYoutubeId } from '../components/StudentSpaceModal';
-import { getFormationById, getPublishedFormations, getCategoryLabel, type Formation } from '../lib/firebase';
+import { getFormationById, getPublishedFormations, getCategoryLabel, pickLocalizedText, type Formation } from '../lib/firebase';
 import { 
   GraduationCap, Clock, Award, Star, CheckCircle, ChevronDown, 
   ChevronUp, Heart, Video, FileText, Smartphone, ShieldCheck, 
@@ -118,16 +118,8 @@ export default function FormationDetailPage() {
     );
   }
 
-  const pickLang = (val: unknown): string => {
-    if (typeof val === 'string') return val;
-    if (val && typeof val === 'object') {
-      const rec = val as Record<string, string | undefined>;
-      return rec[lang] || rec.fr || rec.ar || rec.en || '';
-    }
-    return '';
-  };
-  const title = pickLang(formation.name);
-  const description = pickLang(formation.description);
+  const title = pickLocalizedText(formation.name, lang);
+  const description = pickLocalizedText(formation.description, lang);
   
   const numPrice = typeof formation.price === 'number' ? formation.price : Number(formation.price) || 0;
   const priceFormatted = `${numPrice.toLocaleString()} ${t('currency')}`;
