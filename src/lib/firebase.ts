@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, setDoc, doc, query, where, Timestamp } from 'firebase/firestore';
-import { getAuth, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInAnonymously } from 'firebase/auth';
 
 // Firebase configuration loaded securely from environment variables (Vite .env or CI/CD secrets).
 // Secrets are never committed to version control.
@@ -157,30 +157,10 @@ export interface CurriculumModule {
 }
 
 const STATIC_DEMO_FORMATION_IDS = new Set(['f1', 'f2', 'f3']);
-const STATIC_DEMO_TITLES = new Set([
-  'communication positive dans le couple',
-  'positive communication for couples',
-  'التواصل الإيجابي في الحياة الزوجية',
-  'éducation bienveillante & gestion des émotions chez l’enfant',
-  "éducation bienveillante & gestion des émotions chez l'enfant",
-  'positive parenting & managing children’s emotions',
-  "positive parenting & managing children's emotions",
-  'التربية الإيجابية وإدارة مشاعر الطفل',
-  'gestion du stress et confiance en soi',
-  'stress management & self-confidence',
-  'إدارة الضغوطات وتعزيز الثقة بالنفس',
-]);
 
 export function isStaticDemoFormation(f: Partial<Formation> | null | undefined): boolean {
-  if (!f) return false;
-  if (f.id && STATIC_DEMO_FORMATION_IDS.has(String(f.id).trim().toLowerCase())) return true;
-  const fr = (f.name?.fr || '').trim().toLowerCase();
-  const en = (f.name?.en || '').trim().toLowerCase();
-  const ar = (f.name?.ar || '').trim().toLowerCase();
-  if ((fr && STATIC_DEMO_TITLES.has(fr)) || (en && STATIC_DEMO_TITLES.has(en)) || (ar && STATIC_DEMO_TITLES.has(ar))) {
-    return true;
-  }
-  return false;
+  if (!f || !f.id) return false;
+  return STATIC_DEMO_FORMATION_IDS.has(String(f.id).trim().toLowerCase());
 }
 
 export async function getPublishedFormations(_forceRefresh = false): Promise<Formation[]> {
@@ -216,11 +196,12 @@ export async function getPublishedFormations(_forceRefresh = false): Promise<For
         sessionsCollectionAccessible = true;
         sessionsSnap.docs.forEach(sDoc => {
           const sData = sDoc.data() as any;
-          if (sData.formationId && sData.status === 'open') {
-            const list = openSessionsByFormation.get(sData.formationId) || [];
+          const fId = String(sData.formationId || '').trim();
+          if (fId && sData.status === 'open') {
+            const list = openSessionsByFormation.get(fId) || [];
             list.push({
               id: sDoc.id,
-              formationId: sData.formationId,
+              formationId: fId,
               formationName: sData.formationName || '',
               startDate: sData.startDate || '',
               endDate: sData.endDate || '',
@@ -231,7 +212,7 @@ export async function getPublishedFormations(_forceRefresh = false): Promise<For
               location: sData.location || '',
               status: 'open',
             });
-            openSessionsByFormation.set(sData.formationId, list);
+            openSessionsByFormation.set(fId, list);
           }
         });
       } catch {
@@ -241,7 +222,7 @@ export async function getPublishedFormations(_forceRefresh = false): Promise<For
       // Filter: ONLY show formations that have at least one open session
       const formationsWithOpenSession = rawFormations
         .map(f => {
-          const fromSessionsCol = openSessionsByFormation.get(f.id) || [];
+          const fromSessionsCol = openSessionsByFormation.get(String(f.id || '').trim()) || [];
           const fromEmbedded = Array.isArray(f.openSessions)
             ? f.openSessions.filter(s => s && s.status === 'open')
             : [];
@@ -274,8 +255,15 @@ export async function getPublishedFormations(_forceRefresh = false): Promise<For
 
       return formationsWithOpenSession;
     }
-  } catch (error) {
-    console.warn('Firebase fetching formations failed:', error);
+  } catch (error: any) {
+    if (error?.code === 'permission-denied') {
+      console.error(
+        '[Qalbi Website] Firestore permission-denied on services: publish APP/firestore.rules in Firebase Console (project qalbi-itmaan-de94a).',
+        error
+      );
+    } else {
+      console.warn('Firebase fetching formations failed:', error);
+    }
   }
   return [];
 }
